@@ -1,0 +1,31 @@
+networks:
+  databases:
+    external: true
+    name: databases
+
+volumes:
+  postgres_pure_wear_data:
+    driver: local
+    name: postgres_pure_wear_data
+
+services:
+  postgres_pure_wear:
+    image: pgvector/pgvector:pg15
+    container_name: postgres_pure_wear
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - postgres_pure_wear_data:/var/lib/postgresql/data
+      - ./conf/postgresql.conf:/etc/postgresql/postgresql.conf
+    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
+    healthcheck:
+      test: >
+        pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5435:5432"
+    networks:
+      - databases
