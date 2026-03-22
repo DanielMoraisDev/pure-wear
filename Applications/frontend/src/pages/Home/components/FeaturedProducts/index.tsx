@@ -1,4 +1,4 @@
-import { Sparkles } from "lucide-react";
+import { Award, Sparkles, Trophy } from "lucide-react";
 import Product from "@/components/common/Product";
 import ProductSkeleton from "@/components/common/ProductSkeleton";
 
@@ -10,10 +10,12 @@ import two from "@/assets/images/Mens/two.jpg";
 import fivee from "@/assets/images/Mens/fivee.jpg";
 import four from "@/assets/images/Mens/four.jpg";
 import six from "@/assets/images/Mens/six.jpg";
+import twelve from "@/assets/images/Mens/twelve.jpg";
+import nine from "@/assets/images/Mens/nine.jpg";
 import { ProductAttributes } from "@/types/products.types";
 import { useEffect, useState } from "react";
 
-const NewArrivals = () => {
+const FeaturedProducts = () => {
   const products: ProductAttributes[] = [
     {
       id: "1",
@@ -97,8 +99,8 @@ const NewArrivals = () => {
     <section className="flex flex-col gap-4 p-5 md:px-32">
       {/* Título Sessão */}
       <div className="flex flex-row gap-3	items-center">
-        <Sparkles size={32} />
-        <h2 className="text-3xl font-medium">New Arrivals</h2>
+        <Trophy size={32} />
+        <h2 className="text-3xl font-medium">Featured Products</h2>
       </div>
       {/* Lista de Produtos */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
@@ -112,4 +114,4 @@ const NewArrivals = () => {
   );
 };
 
-export default NewArrivals;
+export default FeaturedProducts;

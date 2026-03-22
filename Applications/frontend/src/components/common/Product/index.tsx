@@ -23,16 +23,16 @@ const Product = ({ product }: ProductProps) => {
       </div>
       <div>
         {/* Nome */}
-        <p className="text-xl object-cover transition-colors duration-500 group-hover:text-gray-500">
+        <p className="text-md md:text-xl object-cover transition-colors duration-500 group-hover:text-gray-500">
           {product.name}
         </p>
         {/* Preços */}
         <div className="flex flex-row gap-2">
           {product.discount && (
-            <span className="text-2xl">${product.discount}</span>
+            <span className="text-lg md:text-2xl">${product.discount}</span>
           )}
           <span
-            className={`${product.discount ? "text-xl" : "text-2xl"} ${product.discount && "text-muted-foreground line-through"}`}
+            className={`${product.discount ? "text-md md:text-xl" : "text-lg md:text-2xl"} ${product.discount && "text-muted-foreground line-through"}`}
           >
             ${product.price}
           </span>

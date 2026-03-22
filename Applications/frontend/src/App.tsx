@@ -2,6 +2,8 @@ import { Routes, BrowserRouter, Route } from "react-router-dom";
 import Home from "@/pages/Home";
 import Shop from "@/pages/Shop";
 import Navbar from "@/layouts/Navbar";
+import Footer from "@/layouts/Footer";
+import NotFound from "@/pages/NotFound";
 
 const App = () => {
   return (
@@ -13,21 +15,21 @@ const App = () => {
             <>
               <Navbar />
               <Home />
-              {/* <Footer /> */}
+              <Footer />
             </>
           }
         />
         <Route
-          path="/produtos"
+          path="/products"
           element={
             <>
-              {/* <Navbar /> */}
+              <Navbar />
               <Shop />
-              {/* <Footer /> */}
+              <Footer />
             </>
           }
         />
-        {/* <Route path="*" element={<NotFound />} /> */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

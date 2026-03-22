@@ -33,10 +33,14 @@ const Banner = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    setTimeout(() => {
+    // Gera um número entre 1000ms (1s) e 2000ms (2s)
+    const randomDelay = Math.floor(Math.random() * (2000 - 1000 + 1)) + 1000;
+
+    const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 2000);
+    }, randomDelay);
   }, []);
+
   return (
     <section>
       {/* Configuração Carousel */}

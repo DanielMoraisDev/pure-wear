@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Baby,
   Book,
@@ -70,12 +68,11 @@ interface NavbarProps {
   };
 }
 
-// Assets
 import logoImage from "@/assets/images/logo.png";
 
 const Navbar = ({
   logo = {
-    url: "#",
+    url: "/",
     src: logoImage,
     alt: "logo",
     title: null,
@@ -84,7 +81,7 @@ const Navbar = ({
     { title: "Home", url: "#" },
     {
       title: "Categories",
-      url: "#",
+      url: "",
       items: [
         {
           title: "Kids",
@@ -132,7 +129,7 @@ const Navbar = ({
             <a href={logo.url} className="flex items-center gap-2">
               <img
                 src={logo.src}
-                className="max-h-8 dark:invert"
+                className="max-h-12 dark:invert"
                 alt={logo.alt}
               />
               <span className="text-lg font-semibold tracking-tighter">
@@ -186,7 +183,7 @@ const Navbar = ({
                     <a href={logo.url} className="flex items-center gap-2 ">
                       <img
                         src={logo.src}
-                        className="max-h-8 dark:invert"
+                        className="max-h-12 dark:invert"
                         alt={logo.alt}
                       />
                     </a>
@@ -203,7 +200,7 @@ const Navbar = ({
 
                   <div className="flex flex-col gap-3">
                     <Button asChild variant="outline">
-                      <div>
+                      <div className="h-auto px-8 py-6">
                         <ShoppingCart />
                         <a href={cart.url}>{cart.title}</a>
                       </div>
