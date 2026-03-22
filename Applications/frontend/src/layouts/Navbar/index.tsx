@@ -6,6 +6,7 @@ import {
   Menu,
   Shirt,
   ShoppingBag,
+  ShoppingCart,
   Sunset,
   Trees,
   Zap,
@@ -53,6 +54,10 @@ interface NavbarProps {
     className?: string;
   };
   menu?: MenuItem[];
+  cart?: {
+    title: string;
+    url: string;
+  };
   auth?: {
     login: {
       title: string;
@@ -76,35 +81,36 @@ const Navbar = ({
     title: null,
   },
   menu = [
-    { title: "Início", url: "#" },
+    { title: "Home", url: "#" },
     {
-      title: "Categorias",
+      title: "Categories",
       url: "#",
       items: [
         {
-          title: "Crianças",
-          description: "Conforto e diversão para os pequenos exploradores.",
+          title: "Kids",
+          description: "Comfort and fun for little explorers.",
           icon: <Baby className="size-5 shrink-0" />,
           url: "#",
         },
         {
-          title: "Homens",
-          description: "Do casual ao formal com o máximo de estilo.",
+          title: "Men",
+          description: "From casual to formal with maximum style.",
           icon: <Shirt className="size-5 shrink-0" />,
           url: "#",
         },
         {
-          title: "Mulheres",
-          description: "Tendências e elegância para todos os momentos.",
+          title: "Women",
+          description: "Trends and elegance for every moment.",
           icon: <ShoppingBag className="size-5 shrink-0" />,
           url: "#",
         },
       ],
     },
   ],
+  cart = { title: "Cart", url: "#" },
   auth = {
-    login: { title: "Entrar", url: "#" },
-    signup: { title: "Criar Conta", url: "#" },
+    login: { title: "Log In", url: "#" },
+    signup: { title: "Sign Up", url: "#" },
   },
   className,
 }: NavbarProps) => {
@@ -118,7 +124,7 @@ const Navbar = ({
           </span>
         </div>
       </header>
-      <div className="py-2 p-5 md:px-12 gap-2 flex flex-col w-full">
+      <div className="py-4 p-5 md:px-32 gap-2 flex flex-col w-full">
         {/* Desktop Menu */}
         <nav className="hidden items-center justify-between lg:flex">
           <div className="flex items-center gap-6">
@@ -142,6 +148,12 @@ const Navbar = ({
             </div>
           </div>
           <div className="flex gap-2">
+            <Button asChild variant="outline" size="sm">
+              <div>
+                <ShoppingCart />
+                <a href={cart.url}>{cart.title}</a>
+              </div>
+            </Button>
             <Button asChild variant="outline" size="sm">
               <a href={auth.login.url}>{auth.login.title}</a>
             </Button>
@@ -171,7 +183,7 @@ const Navbar = ({
               <SheetContent className="overflow-y-auto">
                 <SheetHeader>
                   <SheetTitle>
-                    <a href={logo.url} className="flex items-center gap-2">
+                    <a href={logo.url} className="flex items-center gap-2 ">
                       <img
                         src={logo.src}
                         className="max-h-8 dark:invert"
@@ -190,6 +202,12 @@ const Navbar = ({
                   </Accordion>
 
                   <div className="flex flex-col gap-3">
+                    <Button asChild variant="outline">
+                      <div>
+                        <ShoppingCart />
+                        <a href={cart.url}>{cart.title}</a>
+                      </div>
+                    </Button>
                     <Button asChild variant="outline">
                       <a href={auth.login.url}>{auth.login.title}</a>
                     </Button>
@@ -261,7 +279,7 @@ const renderMobileMenuItem = (item: MenuItem) => {
 const SubMenuLink = ({ item }: { item: MenuItem }) => {
   return (
     <a
-      className="flex min-w-80 flex-row gap-4 rounded-md p-3 leading-none no-underline transition-colors outline-none select-none hover:bg-muted hover:text-accent-foreground"
+      className="flex min-w-80 flex-row gap-4 rounded-md p-3 leading-none no-underline! transition-colors outline-none select-none hover:bg-muted hover:text-accent-foreground"
       href={item.url}
     >
       <div className="text-foreground">{item.icon}</div>
