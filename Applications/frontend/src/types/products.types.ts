@@ -5,4 +5,5 @@ export interface ProductAttributes {
   image: string;
   imageDescription: string;
   discount?: number;
+  sku?: string;
 }

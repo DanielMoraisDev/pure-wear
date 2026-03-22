@@ -145,16 +145,26 @@ const Navbar = ({
             </div>
           </div>
           <div className="flex gap-2">
-            <Button asChild variant="outline" size="sm">
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="h-auto px-8 py-3"
+            >
               <div>
                 <ShoppingCart />
                 <a href={cart.url}>{cart.title}</a>
               </div>
             </Button>
-            <Button asChild variant="outline" size="sm">
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="h-auto px-8 py-3"
+            >
               <a href={auth.login.url}>{auth.login.title}</a>
             </Button>
-            <Button asChild size="sm">
+            <Button asChild size="lg" className="h-auto px-8 py-3">
               <a href={auth.signup.url}>{auth.signup.title}</a>
             </Button>
           </div>
@@ -173,7 +183,11 @@ const Navbar = ({
             </a>
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="outline" size="icon">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-auto px-5 py-3"
+                >
                   <Menu className="size-4" />
                 </Button>
               </SheetTrigger>
@@ -193,22 +207,26 @@ const Navbar = ({
                   <Accordion
                     type="single"
                     collapsible
-                    className="flex w-full flex-col gap-4"
+                    className="flex w-full flex-col gap-4 h-auto"
                   >
                     {menu.map((item) => renderMobileMenuItem(item))}
                   </Accordion>
 
                   <div className="flex flex-col gap-3">
                     <Button asChild variant="outline">
-                      <div className="h-auto px-8 py-6">
+                      <div className="h-auto px-8 py-3">
                         <ShoppingCart />
                         <a href={cart.url}>{cart.title}</a>
                       </div>
                     </Button>
-                    <Button asChild variant="outline">
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="h-auto px-8 py-3"
+                    >
                       <a href={auth.login.url}>{auth.login.title}</a>
                     </Button>
-                    <Button asChild>
+                    <Button asChild className="h-auto px-8 py-3">
                       <a href={auth.signup.url}>{auth.signup.title}</a>
                     </Button>
                   </div>

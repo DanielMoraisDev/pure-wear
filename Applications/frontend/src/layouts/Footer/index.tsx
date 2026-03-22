@@ -135,13 +135,6 @@ const Footer = ({
               </p>
               <div className="flex gap-4 pt-2">
                 <a
-                  href={socials.github}
-                  target="_blank"
-                  className="hover:text-white"
-                >
-                  <Github className="size-5" />
-                </a>
-                <a
                   href={socials.instagram}
                   target="_blank"
                   className="hover:text-white"
@@ -185,7 +178,11 @@ const Footer = ({
               contato para parcerias.
             </p>
             <div className="flex flex-wrap justify-center gap-4 pt-4">
-              <Button asChild variant="default" className="bg-white text-black">
+              <Button
+                asChild
+                variant="default"
+                className="bg-white text-black hover:bg-transparent hover:text-white hover:ring-[1px] hover:ring-white transition-all"
+              >
                 <a href={socials.github} target="_blank">
                   <Github className="mr-2 size-4" /> Ver Projetos no GitHub
                 </a>

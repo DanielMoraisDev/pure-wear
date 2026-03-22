@@ -201,11 +201,11 @@ const Shop = () => {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <div className="flex flex-row gap-2 justify-between">
-          <div className="w-[20%] flex-col">
+        <div className="flex flex-col md:flex-row gap-2 justify-between">
+          <div className="w-full lg:w-[20%] flex-col">
             <Filters />
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+          <div className="w-full lg:w-[80%] grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {isLoading
               ? Array.from({ length: 8 }).map((_, i) => (
                   <ProductSkeleton key={i} />
