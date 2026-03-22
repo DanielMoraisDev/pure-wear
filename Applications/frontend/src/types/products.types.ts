@@ -1,9 +1,17 @@
+interface ProductImages {
+  image: string;
+  imageDescription: string;
+}
+
 export interface ProductAttributes {
   id: string;
   name: string;
   price: number;
-  image: string;
-  imageDescription: string;
+  images: ProductImages[];
   discount?: number;
   sku?: string;
+  description?: string;
+  rating?: number;
+  reviewsCount?: number;
+  sizes?: string[];
 }

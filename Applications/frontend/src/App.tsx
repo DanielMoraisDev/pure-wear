@@ -4,6 +4,7 @@ import Shop from "@/pages/Shop";
 import Navbar from "@/layouts/Navbar";
 import Footer from "@/layouts/Footer";
 import NotFound from "@/pages/NotFound";
+import Product from "@/pages/Product";
 
 const App = () => {
   return (
@@ -25,6 +26,16 @@ const App = () => {
             <>
               <Navbar />
               <Shop />
+              <Footer />
+            </>
+          }
+        />
+        <Route
+          path="/product/:id"
+          element={
+            <>
+              <Navbar />
+              <Product />
               <Footer />
             </>
           }

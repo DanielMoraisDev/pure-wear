@@ -1,12 +1,15 @@
 import { ProductAttributes } from "@/types/products.types";
+import { useNavigate } from "react-router-dom";
 
 interface ProductProps {
   product: ProductAttributes;
 }
 
-const Product = ({ product }: ProductProps) => {
+const ProductItem = ({ product }: ProductProps) => {
+  const navigate = useNavigate();
+
   const handleClickProduct = (e: React.MouseEvent) => {
-    alert(product.id);
+    navigate(`/product/${product.id}`);
   };
 
   return (
@@ -16,8 +19,8 @@ const Product = ({ product }: ProductProps) => {
     >
       <div className="overflow-hidden rounded-md">
         <img
-          src={product.image}
-          alt={product.imageDescription}
+          src={product.images[0].image}
+          alt={product.images[0].imageDescription}
           className="aspect-3/4 w-100 object-cover transition-transform duration-500 group-hover:scale-110"
         />
       </div>
@@ -42,4 +45,4 @@ const Product = ({ product }: ProductProps) => {
   );
 };
 
-export default Product;
+export default ProductItem;

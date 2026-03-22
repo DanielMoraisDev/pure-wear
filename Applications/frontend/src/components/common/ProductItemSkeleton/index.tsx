@@ -1,4 +1,4 @@
-const ProductSkeleton = () => {
+const ProductItemSkeleton = () => {
   return (
     <div className="p-2 flex flex-col gap-2 w-full">
       {/* Skeleton da Imagem - Responsivo */}
@@ -21,4 +21,4 @@ const ProductSkeleton = () => {
   );
 };
 
-export default ProductSkeleton;
+export default ProductItemSkeleton;
