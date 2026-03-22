@@ -5,10 +5,13 @@ import Navbar from "@/layouts/Navbar";
 import Footer from "@/layouts/Footer";
 import NotFound from "@/pages/NotFound";
 import Product from "@/pages/Product";
+import ScrollToTop from "./components/scrollToTop";
+import Cart from "./pages/Cart";
 
 const App = () => {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route
           path="/"
@@ -36,6 +39,16 @@ const App = () => {
             <>
               <Navbar />
               <Product />
+              <Footer />
+            </>
+          }
+        />
+        <Route
+          path="/cart"
+          element={
+            <>
+              <Navbar />
+              <Cart />
               <Footer />
             </>
           }

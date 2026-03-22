@@ -69,6 +69,7 @@ interface NavbarProps {
 }
 
 import logoImage from "@/assets/images/logo.png";
+import { useCartStore } from "@/stores/useCartStore";
 
 const Navbar = ({
   logo = {
@@ -78,7 +79,8 @@ const Navbar = ({
     title: null,
   },
   menu = [
-    { title: "Home", url: "#" },
+    { title: "Home", url: "/" },
+    { title: "Catalog", url: "/products" },
     {
       title: "Categories",
       url: "",
@@ -111,6 +113,8 @@ const Navbar = ({
   },
   className,
 }: NavbarProps) => {
+  const cartCount = useCartStore((state) => state.productsInCart.length);
+
   return (
     <section className={cn("w-full shadow", className)}>
       {/* Header */}
@@ -149,12 +153,20 @@ const Navbar = ({
               asChild
               variant="outline"
               size="lg"
-              className="h-auto px-8 py-3"
+              className="h-auto px-8 py-3 relative" // Adicionado relative
             >
-              <div>
-                <ShoppingCart />
-                <a href={cart.url}>{cart.title}</a>
-              </div>
+              <a href={cart.url} className="flex items-center gap-2">
+                <div className="relative">
+                  <ShoppingCart className="size-5" />
+                  {/* Badge Vermelho */}
+                  {cartCount > 0 && (
+                    <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-[10px] font-bold text-white animate-in zoom-in">
+                      {cartCount}
+                    </span>
+                  )}
+                </div>
+                {cart.title}
+              </a>
             </Button>
             <Button
               asChild
@@ -213,11 +225,24 @@ const Navbar = ({
                   </Accordion>
 
                   <div className="flex flex-col gap-3">
-                    <Button asChild variant="outline">
-                      <div className="h-auto px-8 py-3">
-                        <ShoppingCart />
-                        <a href={cart.url}>{cart.title}</a>
-                      </div>
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="lg"
+                      className="h-auto px-8 py-3 relative" // Adicionado relative
+                    >
+                      <a href={cart.url} className="flex items-center gap-2">
+                        <div className="relative">
+                          <ShoppingCart className="size-5" />
+                          {/* Badge Vermelho */}
+                          {cartCount > 0 && (
+                            <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-[10px] font-bold text-white animate-in zoom-in">
+                              {cartCount}
+                            </span>
+                          )}
+                        </div>
+                        {cart.title}
+                      </a>
                     </Button>
                     <Button
                       asChild
@@ -309,5 +334,7 @@ const SubMenuLink = ({ item }: { item: MenuItem }) => {
     </a>
   );
 };
+
+//TODO - sistema de cart
 
 export default Navbar;

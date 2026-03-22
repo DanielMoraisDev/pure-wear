@@ -3,10 +3,13 @@ import { Star, Truck, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { useCartStore } from "@/stores/useCartStore";
 
 const ProductDetails = ({ product }: { product: any }) => {
   const [activeImage, setActiveImage] = useState<string>("");
   const [selectedSize, setSelectedSize] = useState<string>("M");
+
+  const { toggleCart, productsInCart } = useCartStore();
 
   useEffect(() => {
     if (product && product.images.length > 0) {
@@ -16,18 +19,35 @@ const ProductDetails = ({ product }: { product: any }) => {
 
   const currentPrice = product.price - (product.discount || 0);
 
+  const handleAddToCart = () => {
+    const productToCart = {
+      id: product.id,
+      name: product.name,
+      price: currentPrice,
+      description: product.description,
+      size: selectedSize,
+    };
+
+    toggleCart(productToCart);
+  };
+
+  // Log opcional para monitorar o carrinho sempre que ele mudar
+  useEffect(() => {
+    console.log("Estado atual do carrinho:", productsInCart);
+  }, [productsInCart]);
+
   return (
     <main className="grid grid-cols-1 lg:grid-cols-2 gap-12 px-5 md:px-32">
       {/* Galeria de Imagens Dinâmica */}
       <div className="flex flex-col-reverse md:flex-row gap-4">
-        <div className="flex md:flex-col gap-3 overflow-x-hidden pb-2">
+        <div className="flex md:flex-col gap-3 overflow-scroll  md:overflow-x-hidden pb-2">
           {product.images.map((imgObj: any, idx: number) => (
             <button
               key={idx}
               onMouseEnter={() => setActiveImage(imgObj.image)}
               onClick={() => setActiveImage(imgObj.image)}
               className={cn(
-                "relative min-w-[85px] h-[110px] rounded-lg overflow-hidden transition-all duration-200",
+                "relative min-w-[85px] h-[110px] rounded-lg overflow-scroll  md:overflow-hidden transition-all duration-200",
                 activeImage === imgObj.image
                   ? "scale-105"
                   : "border-transparent opacity-70 hover:opacity-100",
@@ -94,7 +114,7 @@ const ProductDetails = ({ product }: { product: any }) => {
               Tamanho Disponível
             </span>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-3 flex-wrap">
             {product.sizes.map((size: string) => (
               <Button
                 key={size}
@@ -113,8 +133,15 @@ const ProductDetails = ({ product }: { product: any }) => {
           </div>
         </div>
 
-        <Button className="w-full h-16 text-xl font-semibold bg-black hover:bg-gray-500 hover:cursor-pointer rounded-xl shadow-xl shadow-teal-100/50">
-          ADICIONAR AO CARRINHO
+        <Button
+          onClick={handleAddToCart}
+          className="w-full h-16 text-md md:text-xl font-semibold bg-black hover:bg-gray-800 rounded-xl shadow-xl transition-all active:scale-[0.98]"
+        >
+          {productsInCart.some(
+            (p) => p.id === product.id && p.size === selectedSize,
+          )
+            ? "REMOVER DO CARRINHO"
+            : "ADICIONAR AO CARRINHO"}
         </Button>
 
         <div className="grid grid-cols-2 gap-4 pt-4 text-xs font-bold text-slate-500 uppercase tracking-tighter">
