@@ -23,4 +23,5 @@ export interface ProductCart {
   price: number;
   description: string;
   size: string;
+  quantity: number;
 }

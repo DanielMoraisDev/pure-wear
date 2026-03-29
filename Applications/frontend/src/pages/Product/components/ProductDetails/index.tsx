@@ -33,23 +33,22 @@ const ProductDetails = ({ product }: { product: ProductAttributes }) => {
     toggleCart(productToCart);
   };
 
-  // Log opcional para monitorar o carrinho sempre que ele mudar
   useEffect(() => {
-    console.log("Estado atual do carrinho:", productsInCart);
+    console.log("Current cart state:", productsInCart);
   }, [productsInCart]);
 
   return (
     <main className="grid grid-cols-1 lg:grid-cols-2 gap-12 px-5 md:px-32">
-      {/* Galeria de Imagens Dinâmica */}
+      {/* Dynamic Image Gallery */}
       <div className="flex flex-col-reverse md:flex-row gap-4">
-        <div className="flex md:flex-col gap-3 overflow-scroll  md:overflow-x-hidden pb-2">
+        <div className="flex md:flex-col gap-3 overflow-scroll md:overflow-x-hidden pb-2">
           {product.images.map((imgObj: any, idx: number) => (
             <button
               key={idx}
               onMouseEnter={() => setActiveImage(imgObj.image)}
               onClick={() => setActiveImage(imgObj.image)}
               className={cn(
-                "relative min-w-[85px] h-[110px] rounded-lg overflow-scroll  md:overflow-hidden transition-all duration-200",
+                "relative min-w-[85px] h-[110px] rounded-lg overflow-scroll md:overflow-hidden transition-all duration-200",
                 activeImage === imgObj.image
                   ? "scale-105"
                   : "border-transparent opacity-70 hover:opacity-100",
@@ -73,7 +72,7 @@ const ProductDetails = ({ product }: { product: ProductAttributes }) => {
         </div>
       </div>
 
-      {/* Detalhes do Produto */}
+      {/* Product Details */}
       <div className="flex flex-col gap-8">
         <div className="space-y-4">
           <h1 className="text-4xl font-extrabold text-black tracking-tight">
@@ -90,18 +89,18 @@ const ProductDetails = ({ product }: { product: ProductAttributes }) => {
               ))}
             </div>
             <span className="text-sm font-medium text-slate-400 border-l pl-3">
-              {product.reviewsCount} Avaliações de clientes
+              {product.reviewsCount} Customer Reviews
             </span>
           </div>
         </div>
 
         <div className="flex items-center gap-4">
-          <span className="text-4xl font-black text-slate-900">
-            R$ {currentPrice.toFixed(2)}
+          <span className="text-4xl font-black text-black">
+            $ {currentPrice.toFixed(2)}
           </span>
           {product.discount && (
             <span className="text-2xl text-slate-300 line-through font-medium">
-              R$ {product.price.toFixed(2)}
+              $ {product.price.toFixed(2)}
             </span>
           )}
         </div>
@@ -113,7 +112,7 @@ const ProductDetails = ({ product }: { product: ProductAttributes }) => {
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <span className="text-xs font-bold uppercase tracking-widest text-gray-500">
-              Tamanho Disponível
+              Available Sizes
             </span>
           </div>
           <div className="flex gap-3 flex-wrap">
@@ -124,7 +123,7 @@ const ProductDetails = ({ product }: { product: ProductAttributes }) => {
                 className={cn(
                   "w-14 h-12 text-lg font-bold transition-all",
                   selectedSize === size
-                    ? "bg-slate-900 text-white"
+                    ? "bg-gray-900 text-white"
                     : "hover:border-black hover:text-black",
                 )}
                 onClick={() => setSelectedSize(size)}
@@ -137,21 +136,21 @@ const ProductDetails = ({ product }: { product: ProductAttributes }) => {
 
         <Button
           onClick={handleAddToCart}
-          className="w-full h-16 text-md md:text-xl font-semibold bg-black hover:bg-gray-800 rounded-xl shadow-xl transition-all active:scale-[0.98]"
+          className="w-full h-16 text-md md:text-xl font-medium bg-black hover:bg-gray-900 rounded-xl transition-all active:scale-[0.98]"
         >
           {productsInCart.some(
             (p) => p.id === product.id && p.size === selectedSize,
           )
-            ? "REMOVER DO CARRINHO"
-            : "ADICIONAR AO CARRINHO"}
+            ? "REMOVE FROM CART"
+            : "ADD TO CART"}
         </Button>
 
         <div className="grid grid-cols-2 gap-4 pt-4 text-xs font-bold text-slate-500 uppercase tracking-tighter">
           <div className="flex items-center gap-2">
-            <Truck size={18} className="text-black" /> Frete Expresso
+            <Truck size={18} className="text-black" /> Express Shipping
           </div>
           <div className="flex items-center gap-2">
-            <ShieldCheck size={18} className="text-black" /> Garantia 30 dias
+            <ShieldCheck size={18} className="text-black" /> 30-Day Warranty
           </div>
         </div>
 

@@ -108,8 +108,8 @@ const Navbar = ({
   ],
   cart = { title: "Cart", url: "/cart" },
   auth = {
-    login: { title: "Log In", url: "#" },
-    signup: { title: "Sign Up", url: "#" },
+    login: { title: "Log In", url: "/login" },
+    signup: { title: "Sign Up", url: "/register" },
   },
   className,
 }: NavbarProps) => {

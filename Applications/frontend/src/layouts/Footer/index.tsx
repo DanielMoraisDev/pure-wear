@@ -41,7 +41,7 @@ interface FooterProps {
 
 const footerData = {
   logo: {
-    url: "#",
+    url: "/",
     src: logoImage,
     alt: "logo",
   },
@@ -59,11 +59,19 @@ const footerData = {
       ],
     },
     {
+      title: "Legal",
+      items: [
+        { title: "Privacy Policy", url: "/privacy" },
+        { title: "Terms of Service", url: "/terms" },
+        { title: "Refund Policy", url: "/refund" },
+      ],
+    },
+    {
       title: "Quick Links",
       items: [
-        { title: "Log In", url: "#" },
-        { title: "Sign Up", url: "#" },
-        { title: "Cart", url: "#" },
+        { title: "Log In", url: "/login" },
+        { title: "Sign Up", url: "/register" },
+        { title: "Cart", url: "/cart" },
       ],
     },
   ],
@@ -211,8 +219,19 @@ const Footer = ({
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-full bg-white/5 blur-[120px] pointer-events-none" />
         </div>
 
-        <div className="mt-12 text-center text-zinc-600 text-[10px] uppercase tracking-[0.2em]">
-          © 2026 Pure Wear — Handcrafted by You
+        <div className="mt-12 flex flex-col md:flex-row justify-between items-center gap-4 border-t border-zinc-900 pt-8">
+          <div className="text-zinc-600 text-[10px] uppercase tracking-[0.2em]">
+            © 2026 Pure Wear — Handcrafted by You
+          </div>
+
+          <div className="flex gap-6">
+            <a
+              href="/privacy-policy"
+              className="text-zinc-600 hover:text-zinc-400 text-[10px] uppercase tracking-[0.1em] transition-colors"
+            >
+              Privacy And Policies
+            </a>
+          </div>
         </div>
       </div>
     </footer>

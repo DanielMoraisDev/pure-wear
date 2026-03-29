@@ -1,27 +1,25 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { ProductCart } from "@/types/products.types";
-
 interface CartState {
   productsInCart: ProductCart[];
   toggleCart: (product: ProductCart) => void;
+  updateQuantity: (id: string, size: string, delta: number) => void; // delta pode ser +1 ou -1
   clearCart: () => void;
 }
 
 export const useCartStore = create<CartState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       productsInCart: [],
 
       toggleCart: (product) =>
         set((state) => {
-          // 1. Verifica se a combinação ID + SIZE já existe
-          const exists = state.productsInCart.some(
+          const exists = state.productsInCart.find(
             (item) => item.id === product.id && item.size === product.size,
           );
 
           if (exists) {
-            // 2. Remove APENAS o item que tem o ID E o SIZE iguais
             return {
               productsInCart: state.productsInCart.filter(
                 (item) =>
@@ -30,28 +28,41 @@ export const useCartStore = create<CartState>()(
             };
           }
 
-          // 3. Adiciona se não existir
+          // Adiciona com quantidade inicial 1
           return {
-            productsInCart: [...state.productsInCart, product],
+            productsInCart: [
+              ...state.productsInCart,
+              { ...product, quantity: 1 },
+            ],
           };
         }),
 
+      updateQuantity: (id, size, delta) =>
+        set((state) => ({
+          productsInCart: state.productsInCart
+            .map((item) => {
+              if (item.id === id && item.size === size) {
+                const newQuantity = Math.max(0, item.quantity + delta);
+                return { ...item, quantity: newQuantity };
+              }
+              return item;
+            })
+            .filter((item) => item.quantity > 0), // Remove se chegar a 0
+        })),
+
       clearCart: () => set({ productsInCart: [] }),
     }),
-    {
-      name: "cart-storage", // Chave no LocalStorage
-      storage: createJSONStorage(() => localStorage),
-    },
+    { name: "cart-storage" },
   ),
 );
 
-// Totalizer (poupa memoria)
+// Seletores atualizados para multiplicar pelo quantity
 export const useCartTotal = () => {
   const products = useCartStore((state) => state.productsInCart);
-  return products.reduce((acc, item) => acc + item.price, 0);
+  return products.reduce((acc, item) => acc + item.price * item.quantity, 0);
 };
 
 export const useCartCount = () => {
   const products = useCartStore((state) => state.productsInCart);
-  return products.length;
+  return products.reduce((acc, item) => acc + item.quantity, 0);
 };

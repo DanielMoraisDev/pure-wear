@@ -10,13 +10,13 @@ const ProductTabs = ({ product }: { product: any }) => (
           value="description"
           className="text-base font-bold border-b-2 border-transparent data-[state=active]:border-black data-[state=active]:text-black rounded-none px-0 py-4 transition-all"
         >
-          DESCRIÇÃO
+          DESCRIPTION
         </TabsTrigger>
         <TabsTrigger
           value="reviews"
           className="text-base font-bold border-b-2 border-transparent data-[state=active]:border-black data-[state=active]:text-black rounded-none px-0 py-4 transition-all"
         >
-          AVALIAÇÕES ({product.reviewsCount})
+          REVIEWS ({product.reviewsCount})
         </TabsTrigger>
       </TabsList>
 
@@ -27,33 +27,33 @@ const ProductTabs = ({ product }: { product: any }) => (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
           <div className="space-y-6">
             <h4 className="text-2xl font-bold text-black">
-              Por que escolher a Pure Wear?
+              Why choose Pure Wear?
             </h4>
             <p className="text-slate-600 leading-relaxed">
-              {/* Texto original mantido */}
+              We focus on delivering high-quality essentials that blend timeless
+              design with modern comfort.
             </p>
             <div className="grid grid-cols-1 gap-3 font-semibold text-slate-700">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="text-black" size={18} /> Tecido 100%
-                Algodão Premium
+                <CheckCircle2 className="text-black" size={18} /> 100% Premium
+                Cotton Fabric
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="text-black" size={18} /> Modelagem
-                exclusiva Slim-Fit
+                <CheckCircle2 className="text-black" size={18} /> Exclusive
+                Slim-Fit Tailoring
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="text-black" size={18} /> Resistente a
-                múltiplas lavagens
+                <CheckCircle2 className="text-black" size={18} /> Durable &
+                Wash-Resistant
               </div>
             </div>
           </div>
           <div className="bg-slate-100 rounded-2xl p-8 border border-dashed border-slate-300">
             <p className="text-slate-500 italic">
-              "Nossa missão é trazer o básico essencial com qualidade de luxo."
+              "Our mission is to provide the essential basics with luxury
+              quality."
             </p>
-            <p className="mt-4 font-bold text-black">
-              — Equipe de Design Pure Wear
-            </p>
+            <p className="mt-4 font-bold text-black">— Pure Wear Design Team</p>
           </div>
         </div>
       </TabsContent>
@@ -71,7 +71,7 @@ const ProductTabs = ({ product }: { product: any }) => (
               ))}
             </div>
             <p className="text-slate-400">
-              Baseado em {product.reviewsCount} notas de clientes reais.
+              Based on {product.reviewsCount} verified customer ratings.
             </p>
           </div>
           <div className="flex-1 space-y-8">
@@ -81,11 +81,9 @@ const ProductTabs = ({ product }: { product: any }) => (
                 className="border-b pb-6 last:border-0 border-slate-100"
               >
                 <div className="flex justify-between mb-2">
-                  <span className="font-bold text-black">
-                    Usuário Verificado
-                  </span>
+                  <span className="font-bold text-black">Verified Buyer</span>
                   <span className="text-xs text-slate-400 font-bold uppercase tracking-widest">
-                    22/03/2026
+                    March 22, 2026
                   </span>
                 </div>
                 <div className="flex text-yellow-400 mb-3 scale-90 origin-left">
@@ -94,7 +92,8 @@ const ProductTabs = ({ product }: { product: any }) => (
                   ))}
                 </div>
                 <p className="text-slate-600 italic leading-relaxed">
-                  "O produto superou minhas expectativas..."
+                  "The product exceeded my expectations in terms of fit and
+                  fabric quality..."
                 </p>
               </div>
             ))}
@@ -102,7 +101,7 @@ const ProductTabs = ({ product }: { product: any }) => (
               variant="outline"
               className="w-full h-12 border-slate-300 text-slate-500 font-bold hover:bg-slate-50"
             >
-              VER TODAS AS AVALIAÇÕES
+              VIEW ALL REVIEWS
             </Button>
           </div>
         </div>
