@@ -1,17 +1,10 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-
-export type ProductInCart = {
-  id: string;
-  name: string;
-  price: number;
-  description: string;
-  size: string;
-};
+import { ProductCart } from "@/types/products.types";
 
 interface CartState {
-  productsInCart: ProductInCart[];
-  toggleCart: (product: ProductInCart) => void;
+  productsInCart: ProductCart[];
+  toggleCart: (product: ProductCart) => void;
   clearCart: () => void;
 }
 

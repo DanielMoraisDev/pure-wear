@@ -106,7 +106,7 @@ const Navbar = ({
       ],
     },
   ],
-  cart = { title: "Cart", url: "#" },
+  cart = { title: "Cart", url: "/cart" },
   auth = {
     login: { title: "Log In", url: "#" },
     signup: { title: "Sign Up", url: "#" },

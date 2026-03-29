@@ -15,3 +15,12 @@ export interface ProductAttributes {
   reviewsCount?: number;
   sizes?: string[];
 }
+
+export interface ProductCart {
+  id: string;
+  name: string;
+  img: string;
+  price: number;
+  description: string;
+  size: string;
+}

@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/stores/useCartStore";
+import { ProductAttributes, ProductCart } from "@/types/products.types";
 
-const ProductDetails = ({ product }: { product: any }) => {
+const ProductDetails = ({ product }: { product: ProductAttributes }) => {
   const [activeImage, setActiveImage] = useState<string>("");
   const [selectedSize, setSelectedSize] = useState<string>("M");
 
@@ -20,9 +21,10 @@ const ProductDetails = ({ product }: { product: any }) => {
   const currentPrice = product.price - (product.discount || 0);
 
   const handleAddToCart = () => {
-    const productToCart = {
+    const productToCart: ProductCart = {
       id: product.id,
       name: product.name,
+      img: product.images[0].image,
       price: currentPrice,
       description: product.description,
       size: selectedSize,
