@@ -11,6 +11,7 @@ import AuthPage from "./pages/Auth";
 import Auth from "./pages/Auth";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Checkout from "./pages/Checkout";
+import Dashboard from "./pages/Dasboard";
 
 const App = () => {
   return (
@@ -106,6 +107,14 @@ const App = () => {
               <Navbar />
               <Checkout />
               <Footer />
+            </>
+          }
+        />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <>
+              <Dashboard />
             </>
           }
         />
