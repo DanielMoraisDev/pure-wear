@@ -16,10 +16,26 @@ import Stats from "./pages/AdminDashboard/components/Stats";
 import Categories from "./pages/AdminDashboard/components/Categories";
 import UnderDevelopment from "./pages/AdminDashboard/components/UnderDevelopment";
 import Products from "./pages/AdminDashboard/components/Products";
+import { Toaster } from "sonner";
+import { AdminProtectedRoute } from "./components/auth/ProtectedRoute";
 
 const App = () => {
   return (
     <BrowserRouter>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          classNames: {
+            toast:
+              "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg",
+            description: "group-[.toast]:text-muted-foreground",
+            actionButton:
+              "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
+            cancelButton:
+              "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
+          },
+        }}
+      />
       <ScrollToTop />
       <Routes>
         <Route
@@ -114,27 +130,36 @@ const App = () => {
             </>
           }
         />
-        <Route path="/admin" element={<AdminDashboardLayout />}>
-          {/* Index redireciona ou mostra Stats */}
-          <Route index element={<Stats />} />
-          <Route path="dashboard" element={<Stats />} />
 
-          {/* Rotas Ativas */}
-          <Route path="categories" element={<Categories />} />
-          <Route path="products" element={<Products />} />
+        <Route element={<AdminProtectedRoute />}>
+          <Route path="/admin" element={<AdminDashboardLayout />}>
+            {/* Index redireciona ou mostra Stats */}
+            <Route index element={<Stats />} />
+            <Route path="dashboard" element={<Stats />} />
 
-          {/* Rotas em Desenvolvimento */}
-          <Route path="brands" element={<UnderDevelopment title="Brands" />} />
-          <Route path="orders" element={<UnderDevelopment title="Orders" />} />
-          <Route path="users" element={<UnderDevelopment title="Users" />} />
-          <Route
-            path="shipping"
-            element={<UnderDevelopment title="Shipping" />}
-          />
-          <Route
-            path="change-password"
-            element={<UnderDevelopment title="Change Password" />}
-          />
+            {/* Rotas Ativas */}
+            <Route path="categories" element={<Categories />} />
+            <Route path="products" element={<Products />} />
+
+            {/* Rotas em Desenvolvimento */}
+            <Route
+              path="brands"
+              element={<UnderDevelopment title="Brands" />}
+            />
+            <Route
+              path="orders"
+              element={<UnderDevelopment title="Orders" />}
+            />
+            <Route path="users" element={<UnderDevelopment title="Users" />} />
+            <Route
+              path="shipping"
+              element={<UnderDevelopment title="Shipping" />}
+            />
+            <Route
+              path="change-password"
+              element={<UnderDevelopment title="Change Password" />}
+            />
+          </Route>
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
