@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 
 class SizeController extends Controller
 {
+    // This method return all sizes
     public function index()
     {
         $sizes = Size::orderBy('name', 'ASC')->get();

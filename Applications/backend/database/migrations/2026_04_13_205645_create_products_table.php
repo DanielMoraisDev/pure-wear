@@ -23,7 +23,7 @@ return new class extends Migration
             $table->foreignId('brand_id')->constrained()->onDelete('cascade');
             $table->integer('qty')->nullable();
             $table->string('sku');
-            $table->string('barcode');
+            $table->string('barcode')->nullable();
             $table->integer('status')->default(1);
             $table->enum('is_featured', ['yes', 'no'])->default('no');
             $table->timestamps();
