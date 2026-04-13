@@ -62,26 +62,26 @@ class ProductController extends Controller
         ], 200);
     }
 
-    // // This method will return a single product
-    // public function show($id)
-    // {
+    // This method will return a single product
+    public function show($id)
+    {
 
-    //     $product = Product::find($id);
+        $product = Product::find($id);
 
-    //     if ($product == null) {
-    //         return response()->json([
-    //             'status' => 404,
-    //             'message' => 'Product not found.',
-    //             'data' => [],
-    //         ], 404);
-    //     }
+        if ($product == null) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Product not found.',
+                'data' => [],
+            ], 404);
+        }
 
-    //     return response()->json([
-    //         'status' => 200,
-    //         'data' => $product,
-    //     ], 200);
+        return response()->json([
+            'status' => 200,
+            'data' => $product,
+        ], 200);
 
-    // }
+    }
 
     // This method will update a single product
     public function update($id, Request $request)
@@ -133,26 +133,26 @@ class ProductController extends Controller
         ], 200);
     }
 
-    // // This method will destroy a single product
-    // public function destroy($id)
-    // {
+    // This method will destroy a single product
+    public function destroy($id)
+    {
 
-    //     $product = Product::find($id);
+        $product = Product::find($id);
 
-    //     if ($product == null) {
-    //         return response()->json([
-    //             'status' => 404,
-    //             'message' => 'Product not found.',
-    //             'data' => [],
-    //         ], 404);
-    //     }
+        if ($product == null) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Product not found.',
+                'data' => [],
+            ], 404);
+        }
 
-    //     $product->delete();
+        $product->delete();
 
-    //     return response()->json([
-    //         'status' => 200,
-    //         'message' => 'Product deleted successfully.',
-    //     ], 200);
+        return response()->json([
+            'status' => 200,
+            'message' => 'Product deleted successfully.',
+        ], 200);
 
-    // }
+    }
 }
