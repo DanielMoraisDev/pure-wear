@@ -12,12 +12,12 @@ import {
   FetchUpdateCategoryResponse,
 } from "@/types/admin/categories.types";
 
-import axios from "axios";
+import { api } from "@/lib/api";
 
 export const categoryCreate = async (
   params: FetchCreateCategoryParams,
 ): Promise<FetchCreateCategoryResponse> => {
-  const response = await axios.post<FetchCreateCategoryResponse>(
+  const response = await api.post<FetchCreateCategoryResponse>(
     apiUrl + `/categories`,
     params,
   );
@@ -27,7 +27,7 @@ export const categoryCreate = async (
 export const categoryGetAll = async (
   params: FetchGetAllCategoryParams,
 ): Promise<FetchGetAllCategoryResponse> => {
-  const response = await axios.get<FetchGetAllCategoryResponse>(
+  const response = await api.get<FetchGetAllCategoryResponse>(
     apiUrl + `/categories`,
     params,
   );
@@ -37,7 +37,7 @@ export const categoryGetAll = async (
 export const categoryGetOne = async (
   params: FetchGetOneCategoryParams,
 ): Promise<FetchGetOneCategoryResponse> => {
-  const response = await axios.get<FetchGetOneCategoryResponse>(
+  const response = await api.get<FetchGetOneCategoryResponse>(
     apiUrl + `/categories/${params.categoryId}`,
   );
   return response.data;
@@ -46,7 +46,7 @@ export const categoryGetOne = async (
 export const categoryDelete = async (
   params: FetchDeleteCategoryParams,
 ): Promise<FetchDeleteCategoryResponse> => {
-  const response = await axios.delete<FetchDeleteCategoryResponse>(
+  const response = await api.delete<FetchDeleteCategoryResponse>(
     apiUrl + `/categories/${params.categoryId}`,
   );
   return response.data;
@@ -55,7 +55,7 @@ export const categoryDelete = async (
 export const categoryUpdate = async (
   params: FetchUpdateCategoryParams,
 ): Promise<FetchUpdateCategoryResponse> => {
-  const response = await axios.put<FetchUpdateCategoryResponse>(
+  const response = await api.put<FetchUpdateCategoryResponse>(
     apiUrl + `/categories/${params.categoryId}`,
     params,
   );

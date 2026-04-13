@@ -1,8 +1,8 @@
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
-import { Category } from "@/types/admin/categories.types";
-import { useCategory } from "@/hooks/admin/use-categories";
+import { Brand } from "@/types/admin/brands.types";
+import { useBrand } from "@/hooks/admin/use-brands";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,26 +15,26 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-interface CategoryProps {
-  category: Category;
+interface BrandProps {
+  brand: Brand;
   onEdit: () => void;
 }
 
-const CategoryRow = ({ category, onEdit }: CategoryProps) => {
-  const { Delete } = useCategory();
-  const { mutate: deleteCategory, isPending } = Delete();
+const BrandRow = ({ brand, onEdit }: BrandProps) => {
+  const { Delete } = useBrand();
+  const { mutate: deleteBrand, isPending } = Delete();
 
   return (
     <TableRow className="hover:bg-muted/50 transition-colors">
       <TableCell className="font-medium text-muted-foreground">
-        {category.id}
+        {brand.id}
       </TableCell>
-      <TableCell className="font-medium">{category.name}</TableCell>
+      <TableCell className="font-medium">{brand.name}</TableCell>
       <TableCell>
         <span
-          className={`text-sm font-semibold ${category.status === 1 ? "text-emerald-600" : "text-red-500"}`}
+          className={`text-sm font-semibold ${brand.status === 1 ? "text-emerald-600" : "text-red-500"}`}
         >
-          {category.status === 1 ? "Active" : "Inactive"}
+          {brand.status === 1 ? "Active" : "Inactive"}
         </span>
       </TableCell>
       <TableCell className="text-right">
@@ -64,15 +64,13 @@ const CategoryRow = ({ category, onEdit }: CategoryProps) => {
                 <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
                 <AlertDialogDescription>
                   Esta ação não pode ser desfeita. Isso excluirá permanentemente
-                  a categoria <strong>{category.name}</strong>.
+                  a categoria <strong>{brand.name}</strong>.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
                 <AlertDialogAction
-                  onClick={() =>
-                    deleteCategory({ categoryId: String(category.id) })
-                  }
+                  onClick={() => deleteBrand({ brandId: String(brand.id) })}
                   className="bg-red-600 hover:bg-red-700"
                 >
                   Excluir
@@ -86,4 +84,4 @@ const CategoryRow = ({ category, onEdit }: CategoryProps) => {
   );
 };
 
-export default CategoryRow;
+export default BrandRow;

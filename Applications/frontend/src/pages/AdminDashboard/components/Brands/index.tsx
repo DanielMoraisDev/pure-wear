@@ -1,6 +1,6 @@
 import { useState } from "react";
-import CategoryRow from "./components/Category";
-import CategorySkeleton from "./components/CategorySkeleton";
+import BrandRow from "./components/Brand";
+import BrandSkeleton from "./components/BrandSkeleton";
 import {
   Table,
   TableBody,
@@ -12,39 +12,37 @@ import {
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { useCategory } from "@/hooks/admin/use-categories";
-import CategoryFormDialog from "./components/CategoryFormDialog";
-import { Category } from "@/types/admin/categories.types";
+import { useBrand } from "@/hooks/admin/use-brands";
+import BrandFormDialog from "./components/BrandFormDialog";
+import { Brand } from "@/types/admin/brands.types";
 
-const Categories = () => {
-  const { GetAll } = useCategory();
+const Brands = () => {
+  const { GetAll } = useBrand();
   const { data: response, isLoading } = GetAll({});
 
   // Estado para controlar o Dialog de Create/Update
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
-    null,
-  );
+  const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null);
 
   const handleCreate = () => {
-    setSelectedCategory(null);
+    setSelectedBrand(null);
     setIsFormOpen(true);
   };
 
-  const handleEdit = (category: Category) => {
-    setSelectedCategory(category);
+  const handleEdit = (brand: Brand) => {
+    setSelectedBrand(brand);
     setIsFormOpen(true);
   };
 
   // O data costuma vir dentro de response.data dependendo da sua API
-  const categories = Array.isArray(response?.data) ? response.data : [];
+  const brands = Array.isArray(response?.data) ? response.data : [];
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Categories</h2>
+        <h2 className="text-2xl font-bold">Brands</h2>
         <Button onClick={handleCreate} className="gap-2">
-          <Plus className="h-4 w-4" /> New Category
+          <Plus className="h-4 w-4" /> New Brand
         </Button>
       </div>
 
@@ -60,14 +58,12 @@ const Categories = () => {
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              Array.from({ length: 5 }).map((_, i) => (
-                <CategorySkeleton key={i} />
-              ))
-            ) : categories.length > 0 ? (
-              categories.map((cat) => (
-                <CategoryRow
+              Array.from({ length: 5 }).map((_, i) => <BrandSkeleton key={i} />)
+            ) : brands.length > 0 ? (
+              brands.map((cat) => (
+                <BrandRow
                   key={cat.id}
-                  category={cat}
+                  brand={cat}
                   onEdit={() => handleEdit(cat)}
                 />
               ))
@@ -77,7 +73,7 @@ const Categories = () => {
                   colSpan={4}
                   className="text-center py-10 text-muted-foreground"
                 >
-                  Anyone category founded.
+                  Anyone brand founded.
                 </TableCell>
               </TableRow>
             )}
@@ -85,13 +81,13 @@ const Categories = () => {
         </Table>
       </Card>
 
-      <CategoryFormDialog
+      <BrandFormDialog
         open={isFormOpen}
         setOpen={setIsFormOpen}
-        category={selectedCategory}
+        brand={selectedBrand}
       />
     </div>
   );
 };
 
-export default Categories;
+export default Brands;

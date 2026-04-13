@@ -18,6 +18,7 @@ import UnderDevelopment from "./pages/AdminDashboard/components/UnderDevelopment
 import Products from "./pages/AdminDashboard/components/Products";
 import { Toaster } from "sonner";
 import { AdminProtectedRoute } from "./components/auth/ProtectedRoute";
+import Brands from "./pages/AdminDashboard/components/Brands";
 
 const App = () => {
   return (
@@ -140,12 +141,9 @@ const App = () => {
             {/* Rotas Ativas */}
             <Route path="categories" element={<Categories />} />
             <Route path="products" element={<Products />} />
+            <Route path="brands" element={<Brands />} />
 
             {/* Rotas em Desenvolvimento */}
-            <Route
-              path="brands"
-              element={<UnderDevelopment title="Brands" />}
-            />
             <Route
               path="orders"
               element={<UnderDevelopment title="Orders" />}

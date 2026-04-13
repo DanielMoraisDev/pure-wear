@@ -1,8 +1,14 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+interface AdminData {
+  token: string;
+  id: number;
+  name: string;
+}
+
 interface AdminStore {
-  adminInfo: any | null;
+  adminInfo: AdminData | null;
   login: (data: any) => void;
   logout: () => void;
 }
