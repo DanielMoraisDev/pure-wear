@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ImageIcon, Loader2, Plus, X, Star, CopyMinus } from "lucide-react";
+import { ImageIcon, Loader2, Plus, X, Star } from "lucide-react";
 import { toast } from "sonner";
 
 // Hooks
@@ -29,13 +29,25 @@ import { useCategory } from "@/hooks/admin/use-categories";
 import { useBrand } from "@/hooks/admin/use-brands";
 import { useTempImage } from "@/hooks/admin/use-temp-images";
 
-import { Product } from "@/types/admin/products.types";
+import { Product, ProductImage } from "@/types/admin/products.types";
 import * as api from "@/services/admin/products";
 
 interface Props {
   open: boolean;
   setOpen: (open: boolean) => void;
   product: Product | null;
+}
+
+// Extended ProductImage com campos extras para a galeria UI
+interface GalleryImage extends ProductImage {
+  url: string; // URL para usar na img src
+  isNew: boolean; // Flag indicando se é imagem nova
+}
+
+// Tipo da resposta corrigido para changeProductDefaultImage
+interface ChangeProductDefaultImageResponse {
+  status: number;
+  message: string;
 }
 
 const ProductFormDialog = ({ open, setOpen, product }: Props) => {
@@ -63,10 +75,9 @@ const ProductFormDialog = ({ open, setOpen, product }: Props) => {
         productId: string;
         image: string;
       }) => api.changeProductDefaultImage({ productId, image }),
-      onSuccess: (response: any) => {
-        toast.success("Default image updated!");
-        // Atualiza o estado local da imagem padrão
-        setDefaultImage(response.data.image || "");
+      onSuccess: (response: ChangeProductDefaultImageResponse) => {
+        toast.success(response.message || "Default image updated!");
+        // O estado local já foi atualizado no onClick, apenas pegamos a confirmação do backend
       },
       onError: (error) => {
         toast.error("Failed to set default image");
@@ -74,10 +85,8 @@ const ProductFormDialog = ({ open, setOpen, product }: Props) => {
       },
     });
 
-  // Estado para gerenciar a galeria (IDs e URLs)
-  const [gallery, setGallery] = useState<
-    { id: number; url: string; isNew: boolean; imageName?: string }[]
-  >([]);
+  // Estado para gerenciar a galeria (IDs, URLs e metadados)
+  const [gallery, setGallery] = useState<GalleryImage[]>([]);
   const [defaultImage, setDefaultImage] = useState<string>("");
 
   const { register, handleSubmit, reset, setValue, watch, control } =
@@ -101,10 +110,10 @@ const ProductFormDialog = ({ open, setOpen, product }: Props) => {
         description: product.description,
       });
 
-      // Mapeia as imagens existentes
-      const existingImages =
+      // Mapeia as imagens existentes usando o padrão ProductImage
+      const existingImages: GalleryImage[] =
         product.product_images?.map((img) => ({
-          id: img.id,
+          ...img,
           url: `http://localhost:8000/uploads/products/small/${img.image}`,
           isNew: false,
         })) || [];
@@ -148,15 +157,16 @@ const ProductFormDialog = ({ open, setOpen, product }: Props) => {
       mutateFn(formData, {
         onSuccess: (response: any) => {
           const newImage = response.data;
-          setGallery((prev) => [
-            ...prev,
-            {
-              id: newImage.id,
-              url: URL.createObjectURL(file),
-              isNew: true,
-              imageName: newImage.image, // Armazena o nome real da imagem
-            },
-          ]);
+          const newGalleryImage: GalleryImage = {
+            id: newImage.id,
+            product_id: newImage.product_id || (product?.id ?? 0),
+            image: newImage.image,
+            created_at: newImage.created_at || new Date().toISOString(),
+            updated_at: newImage.updated_at || new Date().toISOString(),
+            url: URL.createObjectURL(file),
+            isNew: true,
+          };
+          setGallery((prev) => [...prev, newGalleryImage]);
         },
       });
     });
@@ -241,10 +251,8 @@ const ProductFormDialog = ({ open, setOpen, product }: Props) => {
               </label>
 
               {gallery.map((img) => {
-                // Usa o imageName armazenado se disponível, senão extrai da URL
-                const imageName =
-                  img.imageName || img.url.split("/").pop() || "";
-                const isDefault = defaultImage === imageName;
+                // Usa o campo 'image' do ProductImage padrão
+                const isDefault = defaultImage === img.image;
 
                 console.log(img);
 
@@ -299,12 +307,12 @@ const ProductFormDialog = ({ open, setOpen, product }: Props) => {
                           onClick={() => {
                             // Em criação (imagem nova), apenas atualiza o state
                             if (img.isNew) {
-                              setDefaultImage(imageName);
+                              setDefaultImage(img.image);
                             } else {
                               // Em update, faz requisição ao backend
                               setDefaultImageMutation({
                                 productId: String(product.id),
-                                image: imageName,
+                                image: img.image,
                               });
                             }
                           }}

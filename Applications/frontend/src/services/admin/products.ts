@@ -80,8 +80,13 @@ export const changeProductDefaultImage = async (
   params: FetchChangeProductDefaultImageParams,
 ): Promise<FetchChangeProductDefaultImageResponse> => {
   const response = await api.get<FetchChangeProductDefaultImageResponse>(
-    apiUrl +
-      `/change-product-default-image/?product_id=${params.productId}&?image=${params.image}`,
+    apiUrl + `/change-product-default-image`,
+    {
+      params: {
+        product_id: params.productId,
+        image: params.image,
+      },
+    },
   );
   return response.data;
 };
