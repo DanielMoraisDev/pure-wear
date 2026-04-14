@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
 import JoditEditor from "jodit-react";
 import {
   Dialog,
@@ -19,7 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ImageIcon, Loader2, Plus, X } from "lucide-react";
+import { ImageIcon, Loader2, Plus, X, Star, CopyMinus } from "lucide-react";
+import { toast } from "sonner";
 
 // Hooks
 import { useProduct } from "@/hooks/admin/use-products";
@@ -28,6 +30,7 @@ import { useBrand } from "@/hooks/admin/use-brands";
 import { useTempImage } from "@/hooks/admin/use-temp-images";
 
 import { Product } from "@/types/admin/products.types";
+import * as api from "@/services/admin/products";
 
 interface Props {
   open: boolean;
@@ -50,10 +53,32 @@ const ProductFormDialog = ({ open, setOpen, product }: Props) => {
   const { mutate: createMutate, isPending: isCreating } = Create();
   const { mutate: updateMutate, isPending: isUpdating } = Update();
 
+  // Mutation para definir imagem padrão
+  const { mutate: setDefaultImageMutation, isPending: isSettingDefault } =
+    useMutation({
+      mutationFn: ({
+        productId,
+        image,
+      }: {
+        productId: string;
+        image: string;
+      }) => api.changeProductDefaultImage({ productId, image }),
+      onSuccess: (response: any) => {
+        toast.success("Default image updated!");
+        // Atualiza o estado local da imagem padrão
+        setDefaultImage(response.data.image || "");
+      },
+      onError: (error) => {
+        toast.error("Failed to set default image");
+        console.error(error);
+      },
+    });
+
   // Estado para gerenciar a galeria (IDs e URLs)
   const [gallery, setGallery] = useState<
-    { id: number; url: string; isNew: boolean }[]
+    { id: number; url: string; isNew: boolean; imageName?: string }[]
   >([]);
+  const [defaultImage, setDefaultImage] = useState<string>("");
 
   const { register, handleSubmit, reset, setValue, watch, control } =
     useForm<any>();
@@ -84,6 +109,7 @@ const ProductFormDialog = ({ open, setOpen, product }: Props) => {
           isNew: false,
         })) || [];
       setGallery(existingImages);
+      setDefaultImage(product.image || ""); // Armazena a imagem padrão
     } else if (open) {
       reset({
         title: "",
@@ -100,6 +126,7 @@ const ProductFormDialog = ({ open, setOpen, product }: Props) => {
         short_description: "",
       });
       setGallery([]);
+      setDefaultImage("");
     }
   }, [product, reset, open]);
 
@@ -127,6 +154,7 @@ const ProductFormDialog = ({ open, setOpen, product }: Props) => {
               id: newImage.id,
               url: URL.createObjectURL(file),
               isNew: true,
+              imageName: newImage.image, // Armazena o nome real da imagem
             },
           ]);
         },
@@ -156,6 +184,7 @@ const ProductFormDialog = ({ open, setOpen, product }: Props) => {
       short_description: data.short_description,
       description: data.description,
       gallery: galleryIds.length > 0 ? galleryIds : null,
+      image: defaultImage || null, // Envia o nome da imagem padrão
     };
 
     if (product) {
@@ -190,36 +219,7 @@ const ProductFormDialog = ({ open, setOpen, product }: Props) => {
             </Label>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4">
-              {gallery.map((img) => (
-                <div
-                  key={img.id}
-                  className="relative aspect-square border rounded-xl overflow-hidden group bg-muted"
-                >
-                  <img
-                    src={img.url}
-                    className="w-full h-full object-cover"
-                    alt="Preview"
-                  />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="icon"
-                      className="h-8 w-8 rounded-full"
-                      onClick={() => removeImage(img.id)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  {img.isNew && (
-                    <div className="absolute top-1 left-1 bg-blue-600 text-[10px] text-white px-1.5 rounded-full font-bold">
-                      NEW
-                    </div>
-                  )}
-                </div>
-              ))}
-
-              <label className="relative aspect-square border-2 border-dashed rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors">
+              <label className="relative aspect-[3/4] border-2 border-dashed rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors">
                 <input
                   type="file"
                   multiple
@@ -239,6 +239,100 @@ const ProductFormDialog = ({ open, setOpen, product }: Props) => {
                   </>
                 )}
               </label>
+
+              {gallery.map((img) => {
+                // Usa o imageName armazenado se disponível, senão extrai da URL
+                const imageName =
+                  img.imageName || img.url.split("/").pop() || "";
+                const isDefault = defaultImage === imageName;
+
+                console.log(img);
+
+                return (
+                  <div
+                    key={img.id}
+                    className={`relative  aspect-[3/4] border-2 rounded-xl overflow-hidden bg-muted flex flex-col transition-all ${
+                      isDefault
+                        ? "border-yellow-500 shadow-md shadow-yellow-300"
+                        : "border-gray-300"
+                    }`}
+                  >
+                    <img
+                      src={img.url}
+                      className="w-full h-full object-cover flex-1"
+                      alt="Preview"
+                    />
+
+                    {/* Badge de NEW ou DEFAULT */}
+                    {isDefault ? (
+                      <div className="absolute top-1 left-1 bg-yellow-500 text-[10px] text-white px-1.5 rounded-full font-bold flex items-center gap-0.5">
+                        <Star className="h-2.5 w-2.5" /> DEFAULT
+                      </div>
+                    ) : img.isNew ? (
+                      <div className="absolute top-1 left-1 bg-blue-600 text-[10px] text-white px-1.5 rounded-full font-bold">
+                        NEW
+                      </div>
+                    ) : null}
+
+                    {/* Botões de ação (Delete e Set Default) */}
+                    <div className="w-full flex flex-col gap-1 border-t p-1 bg-background">
+                      {/* Botão DELETE */}
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        className="flex h-6 text-[10px] gap-1"
+                        onClick={() => removeImage(img.id)}
+                      >
+                        <X className="h-3 w-3" />
+                        Delete
+                      </Button>
+
+                      {/* Botão SET DEFAULT (em UPDATE e CREATE) */}
+                      {!isDefault && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="flex h-6 text-[10px] gap-1"
+                          disabled={isSettingDefault}
+                          onClick={() => {
+                            // Em criação (imagem nova), apenas atualiza o state
+                            if (img.isNew) {
+                              setDefaultImage(imageName);
+                            } else {
+                              // Em update, faz requisição ao backend
+                              setDefaultImageMutation({
+                                productId: String(product.id),
+                                image: imageName,
+                              });
+                            }
+                          }}
+                        >
+                          {isSettingDefault ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                          ) : (
+                            <Star className="h-3 w-3" />
+                          )}
+                          Set Default
+                        </Button>
+                      )}
+                      {isDefault && (
+                        <Button
+                          type="button"
+                          variant="default"
+                          size="sm"
+                          className="flex h-6 text-[10px] gap-1 bg-yellow-500 hover:bg-yellow-600 text-white"
+                          disabled={true}
+                        >
+                          <Star className="h-3 w-3 fill-current" />
+                          Current
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -332,11 +426,7 @@ const ProductFormDialog = ({ open, setOpen, product }: Props) => {
                 </div>
                 <div className="grid gap-2">
                   <Label>Qty</Label>
-                  <Input
-                    type="number"
-                    placeholder="0"
-                    {...register("qty")}
-                  />
+                  <Input type="number" placeholder="0" {...register("qty")} />
                 </div>
               </div>
 
@@ -410,7 +500,13 @@ const ProductFormDialog = ({ open, setOpen, product }: Props) => {
             <Button
               type="submit"
               size="lg"
-              disabled={isCreating || isUpdating || isUploading || isSavingDirect}
+              disabled={
+                isCreating ||
+                isUpdating ||
+                isUploading ||
+                isSavingDirect ||
+                isSettingDefault
+              }
             >
               {isCreating || isUpdating ? (
                 <>

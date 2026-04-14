@@ -94,3 +94,13 @@ export interface FetchSaveProductImagesResponse {
   message: string;
   data: SaveProductImage;
 }
+
+export type FetchChangeProductDefaultImageParams = {
+  productId: string;
+  image: string;
+};
+
+export interface FetchChangeProductDefaultImageResponse {
+  status: number;
+  message: string;
+}

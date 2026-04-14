@@ -90,5 +90,25 @@ export function useProduct() {
     });
   };
 
-  return { GetAll, GetOne, Create, Update, Delete, SaveProductImages };
+  // --- CHANGE DEFAULT IMAGE PRODUCT ---
+  const changeProductDefaultImage = (productId: string, image: string) => {
+    return useQuery({
+      queryKey: [...QUERY_KEY, productId],
+      queryFn: () =>
+        api
+          .changeProductDefaultImage({ productId, image })
+          .catch(handleApiError),
+      enabled: !!productId && !!image,
+    });
+  };
+
+  return {
+    GetAll,
+    GetOne,
+    Create,
+    Update,
+    Delete,
+    SaveProductImages,
+    changeProductDefaultImage,
+  };
 }

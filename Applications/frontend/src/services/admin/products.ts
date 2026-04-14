@@ -1,5 +1,7 @@
 import { apiUrl } from "@/components/common/http";
 import {
+  FetchChangeProductDefaultImageParams,
+  FetchChangeProductDefaultImageResponse,
   FetchCreateProductParams,
   FetchCreateProductResponse,
   FetchDeleteProductParams,
@@ -70,6 +72,16 @@ export const saveProductImages = async (
   const response = await api.post<FetchSaveProductImagesResponse>(
     apiUrl + `/save-product-images`,
     params,
+  );
+  return response.data;
+};
+
+export const changeProductDefaultImage = async (
+  params: FetchChangeProductDefaultImageParams,
+): Promise<FetchChangeProductDefaultImageResponse> => {
+  const response = await api.get<FetchChangeProductDefaultImageResponse>(
+    apiUrl +
+      `/change-product-default-image/?product_id=${params.productId}&?image=${params.image}`,
   );
   return response.data;
 };
