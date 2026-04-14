@@ -25,8 +25,19 @@ class Product extends Model
         'is_featured',
     ];
 
+    protected $appends = ['image_url'];
+
+    public function getImageUrlAttribute()
+    {
+        if($this->image == "") {
+            return "";
+        }
+
+        return asset('/uploads/products/small/'.$this->image);
+    }
+
     // Relacionamentos
-    public function images()
+    public function product_images()
     {
         return $this->hasMany(ProductImage::class);
     }
