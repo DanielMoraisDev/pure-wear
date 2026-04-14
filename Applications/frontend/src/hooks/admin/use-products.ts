@@ -7,6 +7,7 @@ import {
   FetchCreateProductParams,
   FetchUpdateProductParams,
   FetchDeleteProductParams,
+  FetchSaveProductImagesParams,
 } from "@/types/admin/products.types";
 
 export function useProduct() {
@@ -74,5 +75,20 @@ export function useProduct() {
     });
   };
 
-  return { GetAll, GetOne, Create, Update, Delete };
+  // --- SAVE NEW PRODUCT IMAGES ---
+  const SaveProductImages = () => {
+    return useMutation({
+      mutationFn: (params: FetchSaveProductImagesParams) =>
+        api.saveProductImages(params),
+      onSuccess: (response) => {
+        toast.success(response.message || "Imagem adicionada com sucesso!");
+        queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      },
+      onError: (error) => {
+        handleApiError(error);
+      },
+    });
+  };
+
+  return { GetAll, GetOne, Create, Update, Delete, SaveProductImages };
 }

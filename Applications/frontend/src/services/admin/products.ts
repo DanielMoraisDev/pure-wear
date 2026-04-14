@@ -8,6 +8,8 @@ import {
   FetchGetAllProductResponse,
   FetchGetOneProductParams,
   FetchGetOneProductResponse,
+  FetchSaveProductImagesParams,
+  FetchSaveProductImagesResponse,
   FetchUpdateProductParams,
   FetchUpdateProductResponse,
 } from "@/types/admin/products.types";
@@ -57,6 +59,16 @@ export const productUpdate = async (
 ): Promise<FetchUpdateProductResponse> => {
   const response = await api.put<FetchUpdateProductResponse>(
     apiUrl + `/products/${params.productId}`,
+    params,
+  );
+  return response.data;
+};
+
+export const saveProductImages = async (
+  params: FetchSaveProductImagesParams,
+): Promise<FetchSaveProductImagesResponse> => {
+  const response = await api.post<FetchSaveProductImagesResponse>(
+    apiUrl + `/save-product-images`,
     params,
   );
   return response.data;

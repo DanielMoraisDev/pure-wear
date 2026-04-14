@@ -78,3 +78,19 @@ export interface FetchDeleteProductResponse {
   status: number;
   message: string;
 }
+
+export interface SaveProductImage {
+  id: number;
+  image: string;
+  product_id: string;
+  created_at: Date | string;
+  updated_at: Date | string;
+}
+
+export type FetchSaveProductImagesParams = FormData;
+
+export interface FetchSaveProductImagesResponse {
+  status: number;
+  message: string;
+  data: SaveProductImage;
+}
