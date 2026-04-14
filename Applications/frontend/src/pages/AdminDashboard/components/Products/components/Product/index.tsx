@@ -1,8 +1,8 @@
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2 } from "lucide-react";
-import { Category } from "@/types/admin/categories.types";
-import { useCategory } from "@/hooks/admin/use-categories";
+import { Edit, Trash2, ImageIcon } from "lucide-react";
+import { Product } from "@/types/admin/products.types";
+import { useProduct } from "@/hooks/admin/use-products";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,28 +15,50 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-interface CategoryProps {
-  category: Category;
+interface ProductRowProps {
+  product: Product;
   onEdit: () => void;
 }
 
-const CategoryRow = ({ category, onEdit }: CategoryProps) => {
-  const { Delete } = useCategory();
-  const { mutate: deleteCategory, isPending } = Delete();
+const ProductRow = ({ product, onEdit }: ProductRowProps) => {
+  const { Delete } = useProduct();
+  const { mutate: deleteProduct, isPending } = Delete();
 
   return (
     <TableRow className="hover:bg-muted/50 transition-colors">
       <TableCell className="font-medium text-muted-foreground">
-        {category.id}
+        {product.id}
       </TableCell>
-      <TableCell className="font-medium">{category.name}</TableCell>
+
+      {/* Coluna Foto */}
+      <TableCell>
+        <div className="h-10 w-10 rounded border bg-muted flex items-center justify-center overflow-hidden">
+          {product.image_url ? (
+            <img
+              src={product.image_url}
+              alt={product.title}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <ImageIcon className="h-5 w-5 text-muted-foreground/50" />
+          )}
+        </div>
+      </TableCell>
+
+      <TableCell className="font-medium">{product.title}</TableCell>
+
+      {/* Colunas Extras mantidas */}
+      <TableCell className="font-medium">${product.price}</TableCell>
+      <TableCell className="font-medium">{product.qty ?? 0}</TableCell>
+
       <TableCell>
         <span
-          className={`text-sm font-semibold ${category.status === 1 ? "text-emerald-600" : "text-red-500"}`}
+          className={`text-sm font-semibold ${product.status === 1 ? "text-emerald-600" : "text-red-500"}`}
         >
-          {category.status === 1 ? "Active" : "Inactive"}
+          {product.status === 1 ? "Active" : "Inactive"}
         </span>
       </TableCell>
+
       <TableCell className="text-right">
         <div className="flex justify-end gap-1">
           <Button
@@ -64,14 +86,14 @@ const CategoryRow = ({ category, onEdit }: CategoryProps) => {
                 <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                 <AlertDialogDescription>
                   This action cannot be undone. This will permanently delete the
-                  category. <strong>{category.name}</strong>.
+                  product: <strong>{product.title}</strong>.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={() =>
-                    deleteCategory({ categoryId: String(category.id) })
+                    deleteProduct({ productId: String(product.id) })
                   }
                   className="bg-red-600 hover:bg-red-700"
                 >
@@ -86,4 +108,4 @@ const CategoryRow = ({ category, onEdit }: CategoryProps) => {
   );
 };
 
-export default CategoryRow;
+export default ProductRow;

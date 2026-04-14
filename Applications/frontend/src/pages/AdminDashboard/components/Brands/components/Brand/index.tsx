@@ -61,19 +61,19 @@ const BrandRow = ({ brand, onEdit }: BrandProps) => {
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Esta ação não pode ser desfeita. Isso excluirá permanentemente
-                  a categoria <strong>{brand.name}</strong>.
+                  This action cannot be undone. This will permanently delete the
+                  category. <strong>{brand.name}</strong>.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={() => deleteBrand({ brandId: String(brand.id) })}
                   className="bg-red-600 hover:bg-red-700"
                 >
-                  Excluir
+                  Delete
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
