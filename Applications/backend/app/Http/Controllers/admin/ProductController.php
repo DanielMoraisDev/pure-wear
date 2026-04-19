@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Models\ProductSize;
 use App\Models\TempImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -16,7 +17,7 @@ class ProductController extends Controller
      // This method will return all products
     public function index()
     {
-        $products = Product::orderBy('created_at', 'DESC')->with('product_images')->get();
+        $products = Product::orderBy('created_at', 'DESC')->with('product_images', 'product_sizes')->get();
 
         return response()->json([
             'status' => 200,
@@ -106,7 +107,7 @@ class ProductController extends Controller
     public function show($id)
     {
 
-        $product = Product::with('product_images')->find($id);
+        $product = Product::with('product_images', 'product_sizes')->find($id);
 
         if ($product == null) {
             return response()->json([
@@ -116,9 +117,13 @@ class ProductController extends Controller
             ], 404);
         }
 
+        $productSizes = $product->product_sizes()->pluck('size_id');
+
+
         return response()->json([
             'status' => 200,
             'data' => $product,
+            'productSizes' => $productSizes
         ], 200);
 
     }
@@ -165,6 +170,18 @@ class ProductController extends Controller
         $product->status = $request->status;
         $product->is_featured = $request->is_featured;
         $product->save();
+
+        if (!empty($request->sizes)) {
+            ProductSize::where('product_id', $product->id)->delete();
+
+
+            foreach ($request->sizes as $sizeId) {
+                $productSize = new ProductSize();
+                $productSize->size_id = $sizeId;
+                $productSize->product_id = $product->id;
+                $productSize->save();
+            }
+        }
 
         return response()->json([
             'status' => 200,
