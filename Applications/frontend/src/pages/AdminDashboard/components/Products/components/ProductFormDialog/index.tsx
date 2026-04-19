@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
-import JoditEditor from "jodit-react";
 import {
   Dialog,
   DialogContent,
@@ -10,17 +9,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { ImageIcon, Loader2, Plus, X, Star } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 // Hooks
@@ -28,9 +17,16 @@ import { useProduct } from "@/hooks/admin/use-products";
 import { useCategory } from "@/hooks/admin/use-categories";
 import { useBrand } from "@/hooks/admin/use-brands";
 import { useTempImage } from "@/hooks/admin/use-temp-images";
+import { useSize } from "@/hooks/admin/use-sizes";
 
 import { Product, ProductImage } from "@/types/admin/products.types";
 import * as api from "@/services/admin/products";
+
+// Subcomponents
+import { GallerySection } from "./components/GallerySection";
+import { FormFieldsSection } from "./components/FormFieldsSection";
+import { SizesSection } from "./components/SizesSection";
+import { DescriptionSection } from "./components/DescriptionSection";
 
 interface Props {
   open: boolean;
@@ -38,26 +34,31 @@ interface Props {
   product: Product | null;
 }
 
-// Extended ProductImage com campos extras para a galeria UI
 interface GalleryImage extends ProductImage {
-  url: string; // URL para usar na img src
-  isNew: boolean; // Flag indicando se é imagem nova
+  url: string;
+  isNew: boolean;
 }
 
-// Tipo da resposta corrigido para changeProductDefaultImage
 interface ChangeProductDefaultImageResponse {
   status: number;
   message: string;
 }
 
 const ProductFormDialog = ({ open, setOpen, product }: Props) => {
-  const { Create, Update, SaveProductImages } = useProduct();
+  const { Create, Update, SaveProductImages, GetOne } = useProduct();
   const { GetAll: getCategories } = useCategory();
   const { GetAll: getBrands } = useBrand();
+  const { GetAll: getSizes } = useSize();
   const { Create: createTempImage } = useTempImage();
 
   const { data: categoriesResp } = getCategories({}, { enabled: open });
   const { data: brandsResp } = getBrands({}, { enabled: open });
+  const { data: sizesResp } = getSizes({}, { enabled: open });
+
+  // Pegar dados atualizados do produto quando está em modo de edição
+  const { data: productDataResp, isLoading: isLoadingProductData } = GetOne(
+    product?.id ? String(product.id) : "",
+  );
 
   const { mutate: uploadImage, isPending: isUploading } = createTempImage();
   const { mutate: saveDirectImage, isPending: isSavingDirect } =
@@ -89,36 +90,53 @@ const ProductFormDialog = ({ open, setOpen, product }: Props) => {
   const [gallery, setGallery] = useState<GalleryImage[]>([]);
   const [defaultImage, setDefaultImage] = useState<string>("");
 
+  // Estado para gerenciar sizes selecionados
+  const [sizesData, setSizesData] = useState<number[]>([]);
+
   const { register, handleSubmit, reset, setValue, watch, control } =
     useForm<any>();
 
   useEffect(() => {
-    if (product && open) {
-      // SET DO FORM COM DADOS DO PRODUTO
+    // Usar dados do GetOne quando estiver atualizando, senão usar product direto
+    const productData = productDataResp?.data || product;
+
+    if (product && open && productData) {
+      // SET DO FORM COM DADOS DO PRODUTO (ATUALIZADO DO SERVIDOR)
       reset({
-        title: product.title,
-        price: product.price,
-        compare_price: product.compare_price,
-        qty: product.qty,
-        sku: product.sku,
-        barcode: product.barcode,
-        status_str: String(product.status),
-        is_featured: product.is_featured || "no",
-        category_id_str: String(product.category_id || ""),
-        brand_id_str: String(product.brand_id || ""),
-        short_description: product.short_description,
-        description: product.description,
+        title: productData.title,
+        price: productData.price,
+        compare_price: productData.compare_price,
+        qty: productData.qty,
+        sku: productData.sku,
+        barcode: productData.barcode,
+        status_str: String(productData.status),
+        is_featured: productData.is_featured || "no",
+        category_id_str: String(productData.category_id || ""),
+        brand_id_str: String(productData.brand_id || ""),
+        short_description: productData.short_description,
+        description: productData.description,
       });
 
       // Mapeia as imagens existentes usando o padrão ProductImage
       const existingImages: GalleryImage[] =
-        product.product_images?.map((img) => ({
+        productData.product_images?.map((img) => ({
           ...img,
           url: `http://localhost:8000/uploads/products/small/${img.image}`,
           isNew: false,
         })) || [];
       setGallery(existingImages);
-      setDefaultImage(product.image || ""); // Armazena a imagem padrão
+      setDefaultImage(productData.image || ""); // Armazena a imagem padrão
+
+      // Carregar sizes já associados ao produto a partir da resposta do GetOne
+      if (
+        productDataResp?.productSizes &&
+        Array.isArray(productDataResp.productSizes)
+      ) {
+        setSizesData(productDataResp.productSizes);
+        console.log(productDataResp);
+      } else {
+        setSizesData([]);
+      }
     } else if (open) {
       reset({
         title: "",
@@ -136,8 +154,9 @@ const ProductFormDialog = ({ open, setOpen, product }: Props) => {
       });
       setGallery([]);
       setDefaultImage("");
+      setSizesData([]); // Resetar sizes quando abre novo produto
     }
-  }, [product, reset, open]);
+  }, [product, productDataResp, reset, open]);
 
   const handleMultipleImages = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -180,30 +199,50 @@ const ProductFormDialog = ({ open, setOpen, product }: Props) => {
     // Pega apenas os IDs das imagens
     const galleryIds = gallery.map((img) => img.id);
 
-    const payload: any = {
-      title: data.title,
-      price: Number(data.price),
-      compare_price: data.compare_price ? Number(data.compare_price) : null,
-      qty: data.qty ? Number(data.qty) : null,
-      sku: data.sku,
-      barcode: data.barcode || null,
-      category_id: Number(data.category_id_str),
-      brand_id: Number(data.brand_id_str),
-      status: Number(data.status_str),
-      is_featured: data.is_featured,
-      short_description: data.short_description,
-      description: data.description,
-      gallery: galleryIds.length > 0 ? galleryIds : null,
-      image: defaultImage || null, // Envia o nome da imagem padrão
-    };
-
     if (product) {
-      updateMutate(
-        { productId: String(product.id), ...payload },
-        { onSuccess: () => setOpen(false) },
-      );
+      // PAYLOAD PARA UPDATE
+      const updatePayload: any = {
+        productId: String(product.id),
+        title: data.title,
+        price: Number(data.price),
+        compare_price: data.compare_price ? Number(data.compare_price) : null,
+        qty: data.qty ? Number(data.qty) : null,
+        sku: data.sku,
+        barcode: data.barcode || null,
+        category_id: Number(data.category_id_str),
+        brand_id: Number(data.brand_id_str),
+        status: Number(data.status_str),
+        is_featured: data.is_featured,
+        short_description: data.short_description,
+        description: data.description,
+        gallery: galleryIds.length > 0 ? galleryIds : null,
+        image: defaultImage || null,
+        // Adiciona sizes no update
+        sizes: sizesData.length > 0 ? sizesData : [],
+      };
+
+      updateMutate(updatePayload, { onSuccess: () => setOpen(false) });
     } else {
-      createMutate(payload, { onSuccess: () => setOpen(false) });
+      // PAYLOAD PARA CREATE
+      const createPayload: any = {
+        title: data.title,
+        price: Number(data.price),
+        compare_price: data.compare_price ? Number(data.compare_price) : null,
+        qty: data.qty ? Number(data.qty) : null,
+        sku: data.sku,
+        barcode: data.barcode || null,
+        category_id: Number(data.category_id_str),
+        brand_id: Number(data.brand_id_str),
+        status: Number(data.status_str),
+        is_featured: data.is_featured,
+        short_description: data.short_description,
+        description: data.description,
+        gallery: galleryIds.length > 0 ? galleryIds : null,
+        image: defaultImage || null,
+        // Create não inclui sizes
+      };
+
+      createMutate(createPayload, { onSuccess: () => setOpen(false) });
     }
   };
 
@@ -223,281 +262,59 @@ const ProductFormDialog = ({ open, setOpen, product }: Props) => {
           </DialogHeader>
 
           {/* --- GALLERY SECTION --- */}
-          <div className="space-y-4">
-            <Label className="text-sm font-bold uppercase tracking-widest flex items-center gap-2 text-primary">
-              <ImageIcon className="h-4 w-4" /> Product Gallery
-            </Label>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4">
-              <label className="relative aspect-[3/4] border-2 border-dashed rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors">
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleMultipleImages}
-                  disabled={isUploading || isSavingDirect}
-                />
-                {isUploading || isSavingDirect ? (
-                  <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                ) : (
-                  <>
-                    <Plus className="h-6 w-6 text-muted-foreground" />
-                    <span className="text-[10px] font-medium text-muted-foreground mt-1">
-                      Add Image
-                    </span>
-                  </>
-                )}
-              </label>
-
-              {gallery.map((img) => {
-                // Usa o campo 'image' do ProductImage padrão
-                const isDefault = defaultImage === img.image;
-
-                console.log(img);
-
-                return (
-                  <div
-                    key={img.id}
-                    className={`relative  aspect-[3/4] border-2 rounded-xl overflow-hidden bg-muted flex flex-col transition-all ${
-                      isDefault
-                        ? "border-yellow-500 shadow-md shadow-yellow-300"
-                        : "border-gray-300"
-                    }`}
-                  >
-                    <img
-                      src={img.url}
-                      className="w-full h-full object-cover flex-1"
-                      alt="Preview"
-                    />
-
-                    {/* Badge de NEW ou DEFAULT */}
-                    {isDefault ? (
-                      <div className="absolute top-1 left-1 bg-yellow-500 text-[10px] text-white px-1.5 rounded-full font-bold flex items-center gap-0.5">
-                        <Star className="h-2.5 w-2.5" /> DEFAULT
-                      </div>
-                    ) : img.isNew ? (
-                      <div className="absolute top-1 left-1 bg-blue-600 text-[10px] text-white px-1.5 rounded-full font-bold">
-                        NEW
-                      </div>
-                    ) : null}
-
-                    {/* Botões de ação (Delete e Set Default) */}
-                    <div className="w-full flex flex-col gap-1 border-t p-1 bg-background">
-                      {/* Botão DELETE */}
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="sm"
-                        className="flex h-6 text-[10px] gap-1"
-                        onClick={() => removeImage(img.id)}
-                      >
-                        <X className="h-3 w-3" />
-                        Delete
-                      </Button>
-
-                      {/* Botão SET DEFAULT (em UPDATE e CREATE) */}
-                      {!isDefault && (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          className="flex h-6 text-[10px] gap-1"
-                          disabled={isSettingDefault}
-                          onClick={() => {
-                            // Em criação (imagem nova), apenas atualiza o state
-                            if (img.isNew) {
-                              setDefaultImage(img.image);
-                            } else {
-                              // Em update, faz requisição ao backend
-                              setDefaultImageMutation({
-                                productId: String(product.id),
-                                image: img.image,
-                              });
-                            }
-                          }}
-                        >
-                          {isSettingDefault ? (
-                            <Loader2 className="h-3 w-3 animate-spin" />
-                          ) : (
-                            <Star className="h-3 w-3" />
-                          )}
-                          Set Default
-                        </Button>
-                      )}
-                      {isDefault && (
-                        <Button
-                          type="button"
-                          variant="default"
-                          size="sm"
-                          className="flex h-6 text-[10px] gap-1 bg-yellow-500 hover:bg-yellow-600 text-white"
-                          disabled={true}
-                        >
-                          <Star className="h-3 w-3 fill-current" />
-                          Current
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <GallerySection
+            gallery={gallery}
+            defaultImage={defaultImage}
+            isUploading={isUploading}
+            isSavingDirect={isSavingDirect}
+            isSettingDefault={isSettingDefault}
+            onImageSelect={handleMultipleImages}
+            onRemoveImage={removeImage}
+            onSetDefaultImage={(img) => {
+              if (img.isNew) {
+                setDefaultImage(img.image);
+              } else {
+                setDefaultImageMutation({
+                  productId: String(product?.id),
+                  image: img.image,
+                });
+              }
+            }}
+            productId={product?.id}
+          />
 
           {/* --- FORM FIELDS --- */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t">
-            <div className="space-y-6">
-              <div className="grid gap-2">
-                <Label className="font-bold">Title</Label>
-                <Input
-                  placeholder="Enter product title"
-                  {...register("title", { required: true })}
-                />
-              </div>
+          <FormFieldsSection
+            isLoading={product && isLoadingProductData ? true : false}
+            categories={categories}
+            brands={brands}
+            register={register}
+            watch={watch}
+            setValue={setValue}
+          />
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label>SKU</Label>
-                  <Input
-                    placeholder="Enter SKU"
-                    {...register("sku", { required: true })}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label>Barcode</Label>
-                  <Input
-                    placeholder="Enter barcode (optional)"
-                    {...register("barcode")}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label>Category</Label>
-                  <Select
-                    value={watch("category_id_str") || ""}
-                    onValueChange={(v) => setValue("category_id_str", v)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Choose a category..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((c) => (
-                        <SelectItem key={c.id} value={String(c.id)}>
-                          {c.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid gap-2">
-                  <Label>Brand</Label>
-                  <Select
-                    value={watch("brand_id_str") || ""}
-                    onValueChange={(v) => setValue("brand_id_str", v)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Choose a brand..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {brands.map((b) => (
-                        <SelectItem key={b.id} value={String(b.id)}>
-                          {b.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              <div className="grid grid-cols-3 gap-4">
-                <div className="grid gap-2">
-                  <Label className="text-emerald-600 font-bold">Price</Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    placeholder="0.00"
-                    {...register("price", { required: true })}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label>Compare Price</Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    placeholder="0.00 (optional)"
-                    {...register("compare_price")}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label>Qty</Label>
-                  <Input type="number" placeholder="0" {...register("qty")} />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label>Status</Label>
-                  <Select
-                    value={watch("status_str") || "1"}
-                    onValueChange={(v) => setValue("status_str", v)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select status..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1">Active</SelectItem>
-                      <SelectItem value="0">Inactive</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid gap-2">
-                  <Label>Featured</Label>
-                  <Select
-                    value={watch("is_featured") || "no"}
-                    onValueChange={(v) => setValue("is_featured", v)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Featured?" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="yes">Yes</SelectItem>
-                      <SelectItem value="no">No</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="grid gap-2">
-                <Label>Short Description</Label>
-                <Textarea
-                  placeholder="Enter a short description of the product..."
-                  {...register("short_description")}
-                  rows={3}
-                />
-              </div>
-            </div>
-          </div>
+          {/* --- SIZES SECTION (Only on Update) --- */}
+          {product && (
+            <SizesSection
+              sizes={Array.isArray(sizesResp?.data) ? sizesResp.data : []}
+              selectedSizes={sizesData}
+              onSizeToggle={(sizeId) => {
+                setSizesData((prev) =>
+                  prev.includes(sizeId)
+                    ? prev.filter((id) => id !== sizeId)
+                    : [...prev, sizeId],
+                );
+              }}
+            />
+          )}
 
           {/* --- FULL DESCRIPTION (JODIT) --- */}
-          <div className="space-y-4 border-t pt-6">
-            <Label className="font-bold">Full Description</Label>
-            <Controller
-              name="description"
-              control={control}
-              render={({ field }) => (
-                <JoditEditor
-                  value={field.value || ""}
-                  onBlur={(newContent) => field.onChange(newContent)}
-                />
-              )}
-            />
-          </div>
+          <DescriptionSection
+            isLoading={product && isLoadingProductData ? true : false}
+            control={control}
+          />
 
-          <DialogFooter className="sticky bottom-0 bg-background border-t py-4 z-50">
+          <DialogFooter className="bottom-0 bg-background border-t py-4 z-50">
             <Button
               type="button"
               variant="outline"

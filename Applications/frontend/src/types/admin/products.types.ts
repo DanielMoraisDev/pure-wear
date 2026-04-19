@@ -1,7 +1,17 @@
+import { Size } from "./sizes.types";
+
 export interface ProductImage {
   id: number;
   product_id: number;
   image: string;
+  created_at: Date | string;
+  updated_at: Date | string;
+}
+
+export interface ProductSize {
+  id: number;
+  product_id: number;
+  size_id: number;
   created_at: Date | string;
   updated_at: Date | string;
 }
@@ -25,6 +35,7 @@ export interface Product {
   created_at: Date | string;
   updated_at: Date | string;
   product_images: ProductImage[];
+  product_sizes: ProductSize[];
 }
 
 export type FetchCreateProductParams = Omit<
@@ -68,6 +79,8 @@ export interface FetchGetOneProductParams {
 export interface FetchGetOneProductResponse {
   status: number;
   data: Product;
+  // Número que vai bater do id de size, para bater com o size_id
+  productSizes: number[];
 }
 
 export interface FetchDeleteProductParams {
