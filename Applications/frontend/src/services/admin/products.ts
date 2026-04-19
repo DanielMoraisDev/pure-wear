@@ -4,6 +4,8 @@ import {
   FetchChangeProductDefaultImageResponse,
   FetchCreateProductParams,
   FetchCreateProductResponse,
+  FetchDeleteProductImageParams,
+  FetchDeleteProductImageResponse,
   FetchDeleteProductParams,
   FetchDeleteProductResponse,
   FetchGetAllProductParams,
@@ -87,6 +89,15 @@ export const changeProductDefaultImage = async (
         image: params.image,
       },
     },
+  );
+  return response.data;
+};
+
+export const deleteProductImage = async (
+  params: FetchDeleteProductImageParams,
+): Promise<FetchDeleteProductImageResponse> => {
+  const response = await api.delete<FetchDeleteProductImageResponse>(
+    apiUrl + `/delete-product-image/${params.productImageId}`,
   );
   return response.data;
 };

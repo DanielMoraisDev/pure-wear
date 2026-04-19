@@ -117,3 +117,12 @@ export interface FetchChangeProductDefaultImageResponse {
   status: number;
   message: string;
 }
+
+export type FetchDeleteProductImageParams = {
+  productImageId: number;
+};
+
+export interface FetchDeleteProductImageResponse {
+  status: number;
+  message: string;
+}

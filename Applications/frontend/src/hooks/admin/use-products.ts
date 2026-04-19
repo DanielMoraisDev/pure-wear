@@ -8,6 +8,7 @@ import {
   FetchUpdateProductParams,
   FetchDeleteProductParams,
   FetchSaveProductImagesParams,
+  FetchDeleteProductImageParams,
 } from "@/types/admin/products.types";
 
 export function useProduct() {
@@ -42,7 +43,7 @@ export function useProduct() {
       mutationFn: (params: FetchCreateProductParams) =>
         api.productCreate(params),
       onSuccess: (response) => {
-        toast.success(response.message || "Marca criada com sucesso!");
+        toast.success(response.message || "Produto criado com sucesso!");
         queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       },
       onError: handleApiError,
@@ -55,7 +56,7 @@ export function useProduct() {
       mutationFn: (params: FetchUpdateProductParams) =>
         api.productUpdate(params),
       onSuccess: (response) => {
-        toast.success(response.message || "Marca atualizada!");
+        toast.success(response.message || "Produto atualizado!");
         queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       },
       onError: handleApiError,
@@ -68,7 +69,7 @@ export function useProduct() {
       mutationFn: (params: FetchDeleteProductParams) =>
         api.productDelete(params),
       onSuccess: (response) => {
-        toast.success(response.message || "Marca removida!");
+        toast.success(response.message || "Produto removido!");
         queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       },
       onError: handleApiError,
@@ -81,7 +82,9 @@ export function useProduct() {
       mutationFn: (params: FetchSaveProductImagesParams) =>
         api.saveProductImages(params),
       onSuccess: (response) => {
-        toast.success(response.message || "Imagem adicionada com sucesso!");
+        toast.success(
+          response.message || "Imagem do produto adicionado com sucesso!",
+        );
         queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       },
       onError: (error) => {
@@ -91,7 +94,7 @@ export function useProduct() {
   };
 
   // --- CHANGE DEFAULT IMAGE PRODUCT ---
-  const changeProductDefaultImage = (productId: string, image: string) => {
+  const ChangeProductDefaultImage = (productId: string, image: string) => {
     return useQuery({
       queryKey: [...QUERY_KEY, productId],
       queryFn: () =>
@@ -102,6 +105,19 @@ export function useProduct() {
     });
   };
 
+  // --- DELETE IMAGE PRODUCT ---
+  const DeleteImageProduct = () => {
+    return useMutation({
+      mutationFn: (params: FetchDeleteProductImageParams) =>
+        api.deleteProductImage(params),
+      onSuccess: (response) => {
+        toast.success(response.message || "Imagem de produto removido!");
+        queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      },
+      onError: handleApiError,
+    });
+  };
+
   return {
     GetAll,
     GetOne,
@@ -109,6 +125,7 @@ export function useProduct() {
     Update,
     Delete,
     SaveProductImages,
-    changeProductDefaultImage,
+    ChangeProductDefaultImage,
+    DeleteImageProduct,
   };
 }

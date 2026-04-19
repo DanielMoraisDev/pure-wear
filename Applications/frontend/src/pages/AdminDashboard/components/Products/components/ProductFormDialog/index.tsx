@@ -45,7 +45,8 @@ interface ChangeProductDefaultImageResponse {
 }
 
 const ProductFormDialog = ({ open, setOpen, product }: Props) => {
-  const { Create, Update, SaveProductImages, GetOne } = useProduct();
+  const { Create, Update, SaveProductImages, GetOne, DeleteImageProduct } =
+    useProduct();
   const { GetAll: getCategories } = useCategory();
   const { GetAll: getBrands } = useBrand();
   const { GetAll: getSizes } = useSize();
@@ -63,6 +64,8 @@ const ProductFormDialog = ({ open, setOpen, product }: Props) => {
   const { mutate: uploadImage, isPending: isUploading } = createTempImage();
   const { mutate: saveDirectImage, isPending: isSavingDirect } =
     SaveProductImages();
+  const { mutate: deleteProductImage, isPending: isDeletingProductImage } =
+    DeleteImageProduct();
   const { mutate: createMutate, isPending: isCreating } = Create();
   const { mutate: updateMutate, isPending: isUpdating } = Update();
 
@@ -133,7 +136,6 @@ const ProductFormDialog = ({ open, setOpen, product }: Props) => {
         Array.isArray(productDataResp.productSizes)
       ) {
         setSizesData(productDataResp.productSizes);
-        console.log(productDataResp);
       } else {
         setSizesData([]);
       }
@@ -192,7 +194,7 @@ const ProductFormDialog = ({ open, setOpen, product }: Props) => {
   };
 
   const removeImage = (id: number) => {
-    setGallery((prev) => prev.filter((img) => img.id !== id));
+    deleteProductImage({ productImageId: id });
   };
 
   const onSubmit = (data: any) => {
