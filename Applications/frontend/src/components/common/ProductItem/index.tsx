@@ -12,7 +12,8 @@ const ProductItem = ({ product }: ProductProps) => {
     navigate(`/product/${product.id}`);
   };
 
-  const haveDiscount = product.compare_price > product.price;
+  const haveDiscount =
+    product.compare_price > product.price && product.compare_price !== null;
 
   return (
     <div
@@ -37,9 +38,9 @@ const ProductItem = ({ product }: ProductProps) => {
             <span className="text-lg md:text-2xl">${product.price}</span>
           )}
           <span
-            className={`${haveDiscount ? "text-md md:text-xl" : "text-lg md:text-2xl"} ${product.compare_price && "text-muted-foreground line-through"}`}
+            className={`${haveDiscount ? "text-md md:text-xl" : "text-lg md:text-2xl"} ${product.compare_price != null && "text-muted-foreground line-through"}`}
           >
-            ${product.compare_price}
+            ${haveDiscount ? product.compare_price : product.price}
           </span>
         </div>
       </div>
