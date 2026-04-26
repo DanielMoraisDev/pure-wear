@@ -1,7 +1,7 @@
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, ImageIcon } from "lucide-react";
-import { Product } from "@/types/admin/products.types";
+import { Product } from "@/types/products.types";
 import { useProduct } from "@/hooks/admin/use-products";
 import {
   AlertDialog,

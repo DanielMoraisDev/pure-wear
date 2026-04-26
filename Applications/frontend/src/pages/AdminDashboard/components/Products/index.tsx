@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useProduct } from "@/hooks/admin/use-products";
 import ProductFormDialog from "./components/ProductFormDialog";
-import { Product } from "@/types/admin/products.types";
+import { Product } from "@/types/products.types";
 
 const Products = () => {
   const { GetAll } = useProduct();
