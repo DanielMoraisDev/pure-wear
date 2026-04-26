@@ -81,9 +81,9 @@ const footerData = {
     { title: "Secure Payment", icon: <ShieldCheck className="size-5" /> },
   ],
   socials: {
-    instagram: "https://instagram.com/seu-user",
-    github: "https://github.com/seu-user",
-    email: "mailto:seu-email@exemplo.com",
+    instagram: "https://instagram.com/danielmorais.gg",
+    github: "https://github.com/DanielMoraisDev",
+    email: "mailto:danielmorais.dev@gmail.com",
   },
 };
 
