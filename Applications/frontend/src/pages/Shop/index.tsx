@@ -11,18 +11,17 @@ import ProductSkeleton from "@/components/common/ProductItemSkeleton";
 import Product from "@/components/common/ProductItem";
 import Filters from "./components/Filters";
 import { products } from "@/dataMockProducts";
+import { useFilterStore } from "@/stores/useFilterStore";
+import { useProduct } from "@/hooks/frontend/use-products";
 
 const Shop = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { search } = useFilterStore();
 
-  useEffect(() => {
-    // Gera um número entre 1000ms (1s) e 2000ms (2s)
-    const randomDelay = Math.floor(Math.random() * (2000 - 1000 + 1)) + 1000;
-
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, randomDelay);
-  }, []);
+  const { GetAll: GetAllProduct } = useProduct();
+  const { data: products, isLoading: isLoadingProducts } = GetAllProduct({
+    brands: search?.brands,
+    categories: search?.categories,
+  });
 
   return (
     <div className="w-full flex flex-col gap-6">
@@ -43,11 +42,11 @@ const Shop = () => {
             <Filters />
           </div>
           <div className="w-full lg:w-[80%] grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-            {isLoading
+            {isLoadingProducts
               ? Array.from({ length: 8 }).map((_, i) => (
                   <ProductSkeleton key={i} />
                 ))
-              : products.map((product) => (
+              : products?.data?.map((product) => (
                   <Product key={product.id} product={product} />
                 ))}
           </div>

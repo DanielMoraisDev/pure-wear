@@ -5,6 +5,7 @@ import * as api from "@/services/frontend/products";
 import {
   FetchGetAllFeaturedProductParams,
   FetchGetAllLatestProductParams,
+  FetchGetAllProductParams,
 } from "@/types/frontend/products.types";
 
 export function useProduct() {
@@ -37,8 +38,22 @@ export function useProduct() {
     });
   };
 
+  // --- LISTAR TODOS COM FILTROS ---
+  const GetAll = (
+    params: FetchGetAllProductParams,
+    options?: { enabled?: boolean },
+  ) => {
+    return useQuery({
+      queryKey: [...QUERY_KEY, "filterable", params],
+      queryFn: () => api.productGetAll(params).catch(handleApiError),
+      enabled: options?.enabled !== false,
+      staleTime: 1000 * 60 * 5,
+    });
+  };
+
   return {
     GetAllFeatured,
     GetAllLatest,
+    GetAll,
   };
 }

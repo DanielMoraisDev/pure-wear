@@ -32,11 +32,8 @@ export const productGetAllLatest = async (
 export const productGetAll = async (
   params: FetchGetAllProductParams,
 ): Promise<FetchGetAllProductResponse> => {
-  const categoryQuery = params.categories.join(",");
-  const brandQuery = params.brands.join(",");
-
   const response = await api.get<FetchGetAllProductResponse>(
-    `${apiUrl}/get-products?category=${categoryQuery}&brand=${brandQuery}`,
+    `${apiUrl}/get-products?category=${params.categories}&brand=${params.brands}`,
   );
   return response.data;
 };

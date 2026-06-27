@@ -17,10 +17,15 @@ interface FiltersProps {
 const Filter = ({ filters, title, value }: FiltersProps) => {
   const { toggleFilter } = useFilterStore();
 
-  const handleFilterChange = (id: string, name: string, type: string) => {
+  const handleFilterChange = (id: number) => {
     const filter = filters.find((filter) => filter.id == id);
-    toggleFilter({ id: filter.id, name: filter.name, type: filter.type });
+    toggleFilter({
+      id: filter.id,
+      name: filter.name,
+      type: filter.type as "brands" | "categories",
+    });
   };
+
   return (
     <>
       <AccordionItem value={value}>
@@ -31,13 +36,11 @@ const Filter = ({ filters, title, value }: FiltersProps) => {
           {filters.map((filter) => (
             <div key={filter.id} className="flex items-center space-x-2">
               <Checkbox
-                id={filter.id}
-                onCheckedChange={() =>
-                  handleFilterChange(filter.id, filter.name, filter.type)
-                }
+                id={`filter-${filter.id}`}
+                onCheckedChange={() => handleFilterChange(filter.id)}
               />
               <Label
-                htmlFor={filter.id}
+                htmlFor={`filter-${filter.id}`}
                 className="text-sm font-normal cursor-pointer"
               >
                 {filter.name}

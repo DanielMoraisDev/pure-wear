@@ -18,6 +18,7 @@ import { useBrand } from "@/hooks/frontend/use-brands";
 
 const Filters = () => {
   const { selectedFilters } = useFilterStore();
+
   const { GetAll: GetAllCategory } = useCategory();
   const { data: categories, isLoading: isLoadingCategories } = GetAllCategory(
     {},
@@ -45,7 +46,7 @@ const Filters = () => {
             title="Categorias"
             value="categories"
             filters={filters?.categories?.map((f) => ({
-              id: String(f.id),
+              id: f.id,
               name: f.name,
               type: "categories",
             }))}
@@ -61,7 +62,7 @@ const Filters = () => {
             title="Brands"
             value="brands"
             filters={filters.brands.map((f) => ({
-              id: String(f.id),
+              id: f.id,
               name: f.name,
               type: "brands",
             }))}
