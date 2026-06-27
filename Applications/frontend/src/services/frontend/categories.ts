@@ -9,7 +9,7 @@ export const categoryGetAll = async (
   params: FetchGetAllCategoryParams,
 ): Promise<FetchGetAllCategoryResponse> => {
   const response = await api.get<FetchGetAllCategoryResponse>(
-    apiUrl + `/get-brands`,
+    apiUrl + `/get-categories`,
     params,
   );
   return response.data;
