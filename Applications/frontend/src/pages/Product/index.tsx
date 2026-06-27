@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { products } from "@/dataMockProducts";
 import {
   Breadcrumb,
@@ -10,35 +10,41 @@ import {
 
 import ProductTabs from "./components/ProductTabs";
 import ProductDetails from "./components/ProductDetails";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ProductDetailsSkeleton from "./components/ProductDetailsSkeleton";
 import ProductTabsSkeleton from "./components/ProductTabsSkeleton";
+import { useProduct } from "@/hooks/frontend/use-products";
 
 const Product = () => {
-  const { id: productIdentifier } = useParams();
-  const product = products.find((p) => p.id === productIdentifier);
+  const { pathname } = useLocation();
 
-  if (!product)
+  const productId = useMemo(() => {
+    // Remove barra final
+    const cleanWay = pathname.endsWith("/") ? pathname.slice(0, -1) : pathname;
+
+    const lastIndice = cleanWay.lastIndexOf("/");
+
+    return Number(cleanWay.slice(lastIndice + 1));
+  }, [pathname]);
+
+  const { Get: GetProduct } = useProduct();
+  const { data: productObj, isLoading: isLoadingProduct } = GetProduct({
+    productId: productId,
+  });
+
+  const product = productObj?.data;
+
+  if (!product) {
     return (
       <div className="p-20 text-center font-bold text-2xl">
         Produto não encontrado.
       </div>
     );
-
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    // Gera um número entre 1000ms (1s) e 2000ms (2s)
-    const randomDelay = Math.floor(Math.random() * (2000 - 1000 + 1)) + 1000;
-
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, randomDelay);
-  }, []);
+  }
 
   return (
     <div className="w-full flex flex-col gap-6 pb-20 animate-in fade-in duration-500">
-      <section className="p-5 md:px-32">
+      <section className="p-5 md:px-16">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
@@ -51,7 +57,7 @@ const Product = () => {
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <span className="font-semibold text-slate-900">
-                {product.name}
+                {product.title}
               </span>
             </BreadcrumbItem>
           </BreadcrumbList>
@@ -59,14 +65,18 @@ const Product = () => {
       </section>
 
       {/* Módulo das Imagens e Compra */}
-      {isLoading ? (
+      {isLoadingProduct ? (
         <ProductDetailsSkeleton />
       ) : (
         <ProductDetails product={product} />
       )}
 
       {/* Módulo da Descrição e Reviews */}
-      {isLoading ? <ProductTabsSkeleton /> : <ProductTabs product={product} />}
+      {isLoadingProduct ? (
+        <ProductTabsSkeleton />
+      ) : (
+        <ProductTabs product={product} />
+      )}
     </div>
   );
 };

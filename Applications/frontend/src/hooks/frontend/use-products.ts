@@ -6,6 +6,7 @@ import {
   FetchGetAllFeaturedProductParams,
   FetchGetAllLatestProductParams,
   FetchGetAllProductParams,
+  FetchGetProductParams,
 } from "@/types/frontend/products.types";
 
 export function useProduct() {
@@ -51,9 +52,23 @@ export function useProduct() {
     });
   };
 
+  // --- DETALHES PRODUTO ---
+  const Get = (
+    params: FetchGetProductParams,
+    options?: { enabled?: boolean },
+  ) => {
+    return useQuery({
+      queryKey: [...QUERY_KEY, "one", params],
+      queryFn: () => api.productGet(params).catch(handleApiError),
+      enabled: options?.enabled !== false,
+      staleTime: 1000 * 60 * 5,
+    });
+  };
+
   return {
     GetAllFeatured,
     GetAllLatest,
     GetAll,
+    Get,
   };
 }

@@ -7,6 +7,8 @@ import {
   FetchGetAllLatestProductResponse,
   FetchGetAllProductParams,
   FetchGetAllProductResponse,
+  FetchGetProductParams,
+  FetchGetProductResponse,
 } from "@/types/frontend/products.types";
 
 export const productGetAllFeatured = async (
@@ -37,6 +39,15 @@ export const productGetAll = async (
 
   const response = await api.get<FetchGetAllProductResponse>(
     `${apiUrl}/get-products?category=${categoryQuery}&brand=${brandQuery}`,
+  );
+  return response.data;
+};
+
+export const productGet = async (
+  params: FetchGetProductParams,
+): Promise<FetchGetProductResponse> => {
+  const response = await api.get<FetchGetProductResponse>(
+    `${apiUrl}/get-product/${params.productId}`,
   );
   return response.data;
 };

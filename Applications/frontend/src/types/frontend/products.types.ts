@@ -23,3 +23,12 @@ export interface FetchGetAllProductResponse {
   status: number;
   data: Product[];
 }
+
+export interface FetchGetProductParams {
+  productId: number;
+}
+
+export interface FetchGetProductResponse {
+  status: number;
+  data: Product;
+}

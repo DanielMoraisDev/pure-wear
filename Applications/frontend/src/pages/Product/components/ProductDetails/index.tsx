@@ -1,62 +1,63 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Star, Truck, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/stores/useCartStore";
-import { ProductAttributes, ProductCart } from "@/types/products.types";
+import {
+  Product,
+  ProductAttributes,
+  ProductCart,
+} from "@/types/products.types";
+import { useSize } from "@/hooks/admin/use-sizes";
 
-const ProductDetails = ({ product }: { product: ProductAttributes }) => {
+const ProductDetails = ({ product }: { product: Product }) => {
+  const { GetAll: getSizes } = useSize();
+
+  const { data: sizes, isLoading: isLoadingSizes } = getSizes({});
+
   const [activeImage, setActiveImage] = useState<string>("");
-  const [selectedSize, setSelectedSize] = useState<string>("M");
+  const [selectedSize, setSelectedSize] = useState<string>("");
+
+  // 	useEffect(() => {
+  // 		console.log(product)
+  // 	}, [product])
 
   const { toggleCart, productsInCart } = useCartStore();
 
-  useEffect(() => {
-    if (product && product.images.length > 0) {
-      setActiveImage(product.images[0].image);
-    }
-  }, [product]);
-
-  const currentPrice = product.price - (product.discount || 0);
-
   const handleAddToCart = () => {
     const productToCart: ProductCart = {
-      id: product.id,
-      name: product.name,
-      img: product.images[0].image,
-      price: currentPrice,
-      description: product.description,
+      id: product?.id,
+      name: product?.title,
+      img: product?.image_url,
+      price: product?.price,
+      description: product?.description,
       size: selectedSize,
+      quantity: product?.qty,
     };
 
     toggleCart(productToCart);
   };
 
-  useEffect(() => {
-    console.log("Current cart state:", productsInCart);
-  }, [productsInCart]);
-
   return (
-    <main className="grid grid-cols-1 lg:grid-cols-2 gap-12 px-5 md:px-32">
+    <main className="grid grid-cols-1 lg:grid-cols-2 gap-12 px-5 md:px-16">
       {/* Dynamic Image Gallery */}
       <div className="flex flex-col-reverse md:flex-row gap-4">
         <div className="flex md:flex-col gap-3 overflow-scroll md:overflow-x-hidden pb-2">
-          {product.images.map((imgObj: any, idx: number) => (
+          {product?.product_images?.map((imgObj, idx: number) => (
             <button
               key={idx}
-              onMouseEnter={() => setActiveImage(imgObj.image)}
-              onClick={() => setActiveImage(imgObj.image)}
+              onMouseEnter={() => setActiveImage(imgObj.image_url)}
+              onClick={() => setActiveImage(imgObj.image_url)}
               className={cn(
                 "relative min-w-[85px] h-[110px] rounded-lg overflow-scroll md:overflow-hidden transition-all duration-200",
-                activeImage === imgObj.image
+                activeImage === imgObj.image_url
                   ? "scale-105"
                   : "border-transparent opacity-70 hover:opacity-100",
               )}
             >
               <img
-                src={imgObj.image}
-                alt={imgObj.imageDescription}
+                src={imgObj?.image_url}
                 className="w-full h-full object-cover"
               />
             </button>
@@ -65,8 +66,8 @@ const ProductDetails = ({ product }: { product: ProductAttributes }) => {
 
         <div className="flex-1 aspect-[3/4] rounded-2xl overflow-hidden bg-slate-50 border group">
           <img
-            src={activeImage}
-            alt={product.name}
+            src={activeImage == "" ? product?.image_url : activeImage}
+            alt={product?.title}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
           />
         </div>
@@ -76,7 +77,7 @@ const ProductDetails = ({ product }: { product: ProductAttributes }) => {
       <div className="flex flex-col gap-8">
         <div className="space-y-4">
           <h1 className="text-4xl font-extrabold text-black tracking-tight">
-            {product.name}
+            {product?.title}
           </h1>
           <div className="flex items-center gap-3">
             <div className="flex text-yellow-400">
@@ -84,29 +85,29 @@ const ProductDetails = ({ product }: { product: ProductAttributes }) => {
                 <Star
                   key={i}
                   size={18}
-                  fill={i < product.rating ? "currentColor" : "none"}
+                  fill={i < 3 ? "currentColor" : "none"}
                 />
               ))}
             </div>
             <span className="text-sm font-medium text-slate-400 border-l pl-3">
-              {product.reviewsCount} Customer Reviews
+              {"12"} Customer Reviews
             </span>
           </div>
         </div>
 
         <div className="flex items-center gap-4">
           <span className="text-4xl font-black text-black">
-            $ {currentPrice.toFixed(2)}
+            $ {product?.price.toFixed(2)}
           </span>
-          {product.discount && (
+          {product?.price && (
             <span className="text-2xl text-slate-300 line-through font-medium">
-              $ {product.price.toFixed(2)}
+              $ {product?.compare_price.toFixed(2)}
             </span>
           )}
         </div>
 
         <p className="text-slate-600 text-lg leading-relaxed border-l-4 border-black pl-4">
-          {product.description}
+          {product?.description}
         </p>
 
         <div className="space-y-4">
@@ -116,21 +117,27 @@ const ProductDetails = ({ product }: { product: ProductAttributes }) => {
             </span>
           </div>
           <div className="flex gap-3 flex-wrap">
-            {product.sizes.map((size: string) => (
-              <Button
-                key={size}
-                variant={selectedSize === size ? "default" : "outline"}
-                className={cn(
-                  "w-14 h-12 text-lg font-bold transition-all",
-                  selectedSize === size
-                    ? "bg-gray-900 text-white"
-                    : "hover:border-black hover:text-black",
-                )}
-                onClick={() => setSelectedSize(size)}
-              >
-                {size}
-              </Button>
-            ))}
+            {sizes?.data
+              ?.filter((size) =>
+                product?.product_sizes?.some(
+                  (product_size) => product_size.size_id === size.id,
+                ),
+              )
+              .map((size) => (
+                <Button
+                  key={size.id}
+                  variant={selectedSize === size.name ? "default" : "outline"}
+                  className={cn(
+                    "w-14 h-12 text-lg font-bold transition-all",
+                    selectedSize === size.name
+                      ? "bg-gray-900 text-white"
+                      : "hover:border-black hover:text-black",
+                  )}
+                  onClick={() => setSelectedSize(size.name)}
+                >
+                  {size.name}
+                </Button>
+              ))}
           </div>
         </div>
 
@@ -139,7 +146,7 @@ const ProductDetails = ({ product }: { product: ProductAttributes }) => {
           className="w-full h-16 text-md md:text-xl font-medium bg-black hover:bg-gray-900 rounded-xl transition-all active:scale-[0.98]"
         >
           {productsInCart.some(
-            (p) => p.id === product.id && p.size === selectedSize,
+            (p) => p.id === product?.id && p.size === selectedSize,
           )
             ? "REMOVE FROM CART"
             : "ADD TO CART"}
@@ -156,7 +163,7 @@ const ProductDetails = ({ product }: { product: ProductAttributes }) => {
 
         <Separator />
         <div className="text-sm font-medium text-slate-400">
-          SKU: <span className="text-slate-900">{product.sku}</span>
+          SKU: <span className="text-slate-900">{product?.sku}</span>
         </div>
       </div>
     </main>

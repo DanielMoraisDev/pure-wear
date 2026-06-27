@@ -17,7 +17,7 @@ export interface ProductAttributes {
 }
 
 export interface ProductCart {
-  id: string;
+  id: number;
   name: string;
   img: string;
   price: number;
@@ -30,6 +30,7 @@ export interface ProductImage {
   id: number;
   product_id: number;
   image: string;
+  image_url: string;
   created_at: Date | string;
   updated_at: Date | string;
 }

@@ -3,7 +3,7 @@ import { Star, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const ProductTabs = ({ product }: { product: any }) => (
-  <section className="px-5 md:px-32 mt-16">
+  <section className="px-5 md:px-16 mt-16">
     <Tabs defaultValue="description" className="w-full">
       <TabsList className="bg-transparent border-b w-full justify-start rounded-none h-auto p-0 gap-10">
         <TabsTrigger
