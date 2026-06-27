@@ -15,8 +15,8 @@ export interface FetchGetAllLatestProductResponse {
 }
 
 export interface FetchGetAllProductParams {
-  categories: string;
-  brands: string;
+  categories: number[];
+  brands: number[];
 }
 
 export interface FetchGetAllProductResponse {

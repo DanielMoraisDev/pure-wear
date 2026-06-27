@@ -13,14 +13,37 @@ import Filters from "./components/Filters";
 import { products } from "@/dataMockProducts";
 import { useFilterStore } from "@/stores/useFilterStore";
 import { useProduct } from "@/hooks/frontend/use-products";
+import { useSearchParams } from "react-router-dom";
 
 const Shop = () => {
-  const { search } = useFilterStore();
+  const [searchParams] = useSearchParams();
+  const { search, setFiltersFromURL } = useFilterStore();
+
+  // 1. Sincroniza a URL com o Zustand assim que a página carrega
+  useEffect(() => {
+    const catsFromUrl = searchParams.get("categories");
+    const brandsFromUrl = searchParams.get("brands");
+
+    // Converte a string "1,2,3" em um array de números [1, 2, 3]
+    const categoriesArray = catsFromUrl
+      ? catsFromUrl.split(",").map(Number).filter(Boolean)
+      : [];
+
+    const brandsArray = brandsFromUrl
+      ? brandsFromUrl.split(",").map(Number).filter(Boolean)
+      : [];
+
+    // Alimenta o Zustand com o estado vindo da URL
+    setFiltersFromURL(categoriesArray, brandsArray);
+  }, []);
+
+  const categoryQuery = search.categories;
+  const brandQuery = search.brands;
 
   const { GetAll: GetAllProduct } = useProduct();
   const { data: products, isLoading: isLoadingProducts } = GetAllProduct({
-    brands: search?.brands,
-    categories: search?.categories,
+    brands: brandQuery,
+    categories: categoryQuery,
   });
 
   return (

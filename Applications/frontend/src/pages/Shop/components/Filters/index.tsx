@@ -69,21 +69,6 @@ const Filters = () => {
           />
         )}
       </Accordion>
-
-      {/* Debug para ver o que está selecionado */}
-      <div className="mt-6 pt-4 border-t text-xs text-muted-foreground">
-        Ativos:{" "}
-        {selectedFilters.length > 0 ? (
-          selectedFilters.map((f, i) => (
-            <span key={f.id} className="text-xs">
-              {f.name}
-              {selectedFilters.length - 1 > i ? ", " : null}
-            </span>
-          ))
-        ) : (
-          <span>Nenhum</span>
-        )}
-      </div>
     </div>
   );
 };
