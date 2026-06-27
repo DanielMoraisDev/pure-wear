@@ -107,7 +107,7 @@ const ProductDetails = ({ product }: { product: Product }) => {
         </div>
 
         <p className="text-slate-600 text-lg leading-relaxed border-l-4 border-black pl-4">
-          {product?.description}
+          <div dangerouslySetInnerHTML={{ __html: product?.description }}></div>
         </p>
 
         <div className="space-y-4">

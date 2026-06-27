@@ -255,68 +255,70 @@ const ProductFormDialog = ({ open, setOpen, product }: Props) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-[1000px] max-h-[95vh] overflow-y-auto">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-          <DialogHeader>
+      <DialogContent className="sm:max-w-[1000px] max-h-[95vh] p-0 flex flex-col [overflow:clip]">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col flex-1 min-h-0"
+        >
+          <DialogHeader className="px-6 pt-6 pb-4 shrink-0">
             <DialogTitle className="text-2xl font-bold">
               {product ? `Editando: ${product.title}` : "New Product"}
             </DialogTitle>
           </DialogHeader>
 
-          {/* --- GALLERY SECTION --- */}
-          <GallerySection
-            gallery={gallery}
-            defaultImage={defaultImage}
-            isUploading={isUploading}
-            isSavingDirect={isSavingDirect}
-            isSettingDefault={isSettingDefault}
-            onImageSelect={handleMultipleImages}
-            onRemoveImage={removeImage}
-            onSetDefaultImage={(img) => {
-              if (img.isNew) {
-                setDefaultImage(img.image);
-              } else {
-                setDefaultImageMutation({
-                  productId: String(product?.id),
-                  image: img.image,
-                });
-              }
-            }}
-            productId={product?.id}
-          />
-
-          {/* --- FORM FIELDS --- */}
-          <FormFieldsSection
-            isLoading={product && isLoadingProductData ? true : false}
-            categories={categories}
-            brands={brands}
-            register={register}
-            watch={watch}
-            setValue={setValue}
-          />
-
-          {/* --- SIZES SECTION (Only on Update) --- */}
-          {product && (
-            <SizesSection
-              sizes={Array.isArray(sizesResp?.data) ? sizesResp.data : []}
-              selectedSizes={sizesData}
-              onSizeToggle={(sizeId) => {
-                setSizesData((prev) =>
-                  prev.includes(sizeId)
-                    ? prev.filter((id) => id !== sizeId)
-                    : [...prev, sizeId],
-                );
+          <div className="overflow-y-auto flex-1 px-6 space-y-8 pb-24">
+            {/* --- GALLERY SECTION --- */}
+            <GallerySection
+              gallery={gallery}
+              defaultImage={defaultImage}
+              isUploading={isUploading}
+              isSavingDirect={isSavingDirect}
+              isSettingDefault={isSettingDefault}
+              onImageSelect={handleMultipleImages}
+              onRemoveImage={removeImage}
+              onSetDefaultImage={(img) => {
+                if (img.isNew) {
+                  setDefaultImage(img.image);
+                } else {
+                  setDefaultImageMutation({
+                    productId: String(product?.id),
+                    image: img.image,
+                  });
+                }
               }}
+              productId={product?.id}
             />
-          )}
+            {/* --- FORM FIELDS --- */}
+            <FormFieldsSection
+              isLoading={product && isLoadingProductData ? true : false}
+              categories={categories}
+              brands={brands}
+              register={register}
+              watch={watch}
+              setValue={setValue}
+            />
+            {/* --- SIZES SECTION (Only on Update) --- */}
+            {product && (
+              <SizesSection
+                sizes={Array.isArray(sizesResp?.data) ? sizesResp.data : []}
+                selectedSizes={sizesData}
+                onSizeToggle={(sizeId) => {
+                  setSizesData((prev) =>
+                    prev.includes(sizeId)
+                      ? prev.filter((id) => id !== sizeId)
+                      : [...prev, sizeId],
+                  );
+                }}
+              />
+            )}
+            {/* --- FULL DESCRIPTION (JODIT) --- */}
+            <DescriptionSection
+              isLoading={product && isLoadingProductData ? true : false}
+              control={control}
+            />
+          </div>
 
-          {/* --- FULL DESCRIPTION (JODIT) --- */}
-          <DescriptionSection
-            isLoading={product && isLoadingProductData ? true : false}
-            control={control}
-          />
-
-          <DialogFooter className="bottom-0 bg-background border-t py-4 z-50">
+          <DialogFooter className="px-6 py-4 border-t bg-background shrink-0">
             <Button
               type="button"
               variant="outline"

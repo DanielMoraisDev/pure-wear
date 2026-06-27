@@ -187,3 +187,21 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 }
+
+.jodit-popup {
+  position: fixed !important;
+}
+
+.jodit-popup__content {
+  position: relative !important;
+}
+
+[data-radix-dialog-content] {
+  transform: none !important;
+  /* Mantém centralizado sem transform */
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  margin-top: -47.5vh;
+  margin-left: -500px; /* metade do max-w-[1000px] */
+}
