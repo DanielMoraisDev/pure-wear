@@ -6,6 +6,7 @@ use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\SizeController;
 use App\Http\Controllers\admin\TempImageController;
+use App\Http\Controllers\front\AccountController;
 use App\Http\Controllers\front\ProductController as FrontProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -18,6 +19,8 @@ Route::get('get-latest-products', [FrontProductController::class, 'latestProduct
 Route::get('get-categories', [FrontProductController::class, 'getCategories']);
 Route::get('get-brands', [FrontProductController::class, 'getBrands']);
 Route::get('sizes', [SizeController::class, 'index']);
+Route::post('register', [AccountController::class, 'register']);
+Route::post('login', [AccountController::class, 'authenticate']);
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
