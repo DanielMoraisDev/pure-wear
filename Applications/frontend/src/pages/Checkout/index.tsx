@@ -9,7 +9,45 @@ import { useCartStore, useCartTotal } from "@/stores/useCartStore";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
+interface CheckoutOrder {
+  product_id: number;
+  name: string;
+  qty: number;
+  price: number;
+  unit_price: number;
+  size: string;
+}
+interface Checkout {
+  name: string;
+  email: string;
+  city: string;
+  state: string;
+  zip: string;
+  address: string;
+  mobile: string;
+  grand_total: number;
+  sub_total: number;
+  shipping: number;
+  cart: CheckoutOrder[];
+}
+
 const Checkout = () => {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [dataCheckout, setDataCheckout] = useState<Checkout>({
+    name: "",
+    email: "",
+    city: "",
+    state: "",
+    zip: "",
+    address: "",
+    mobile: "",
+    grand_total: 0,
+    sub_total: 0,
+    shipping: 0,
+    cart: [],
+  });
+
   const navigate = useNavigate();
   const { productsInCart, clearCart } = useCartStore();
   const total = useCartTotal();
@@ -22,10 +60,38 @@ const Checkout = () => {
   }, []);
 
   useEffect(() => {
+    console.log(dataCheckout);
+  }, [dataCheckout]);
+
+  useEffect(() => {
     if (productsInCart.length === 0 && !isLoading) {
       navigate("/cart");
     }
+
+    const formattedCart: CheckoutOrder[] = productsInCart.map((item) => ({
+      product_id: item.id,
+      name: item.name,
+      qty: item.quantity,
+      price: item.price * item.quantity,
+      unit_price: item.price,
+      size: item.size,
+    }));
+
+    setDataCheckout((prev) => ({
+      ...prev,
+      grand_total: total,
+      sub_total: total,
+      shipping: 0,
+      cart: formattedCart,
+    }));
   }, [productsInCart, isLoading, navigate]);
+
+  useEffect(() => {
+    setDataCheckout((prev) => ({
+      ...prev,
+      name: `${firstName} ${lastName}`,
+    }));
+  }, [lastName, firstName]);
 
   const handleFinalizeOrder = (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,22 +143,104 @@ const Checkout = () => {
             <div className="grid gap-5 md:grid-cols-2">
               <div className="grid gap-2">
                 <Label htmlFor="firstName">First Name</Label>
-                <Input id="firstName" placeholder="John" required />
+                <Input
+                  onChange={(e) => setFirstName(e.target.value)}
+                  id="firstName"
+                  placeholder="John"
+                  required
+                />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="lastName">Last Name</Label>
-                <Input id="lastName" placeholder="Doe" required />
-              </div>
-              <div className="grid gap-2 md:col-span-2">
-                <Label htmlFor="address">Address</Label>
-                <Input id="address" placeholder="123 Main St" required />
+                <Input
+                  onChange={(e) => setLastName(e.target.value)}
+                  id="lastName"
+                  placeholder="Doe"
+                  required
+                />
               </div>
               <div className="grid gap-2 md:col-span-2">
                 <Label htmlFor="email">Email Address</Label>
                 <Input
+                  onChange={(e) =>
+                    setDataCheckout((prev) => ({
+                      ...prev,
+                      email: e.target.value,
+                    }))
+                  }
                   id="email"
                   type="email"
                   placeholder="john@example.com"
+                  required
+                />
+              </div>
+              <div className="grid gap-2 md:col-span-2">
+                <Label htmlFor="address">Address</Label>
+                <Input
+                  onChange={(e) =>
+                    setDataCheckout((prev) => ({
+                      ...prev,
+                      address: e.target.value,
+                    }))
+                  }
+                  id="address"
+                  placeholder="123 Main St"
+                  required
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="city">City</Label>
+                <Input
+                  onChange={(e) =>
+                    setDataCheckout((prev) => ({
+                      ...prev,
+                      city: e.target.value,
+                    }))
+                  }
+                  id="city"
+                  placeholder="Arapiraca"
+                  required
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="state">State</Label>
+                <Input
+                  onChange={(e) =>
+                    setDataCheckout((prev) => ({
+                      ...prev,
+                      state: e.target.value,
+                    }))
+                  }
+                  id="state"
+                  placeholder="Alagoas"
+                  required
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="zip">CEP</Label>
+                <Input
+                  onChange={(e) =>
+                    setDataCheckout((prev) => ({
+                      ...prev,
+                      zip: e.target.value,
+                    }))
+                  }
+                  id="zip"
+                  placeholder="231313-1123"
+                  required
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="mobile">Telefone</Label>
+                <Input
+                  onChange={(e) =>
+                    setDataCheckout((prev) => ({
+                      ...prev,
+                      mobile: e.target.value,
+                    }))
+                  }
+                  id="mobile"
+                  placeholder="(85) 99213-213321"
                   required
                 />
               </div>
