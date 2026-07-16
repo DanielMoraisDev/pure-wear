@@ -34,6 +34,10 @@ import {
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
+import logoImage from "@/assets/images/logo.png";
+import { useCartStore } from "@/stores/useCartStore";
+import { useCostumerStore } from "@/stores/useCostumerStore";
+
 interface MenuItem {
   title: string;
   url: string;
@@ -67,9 +71,6 @@ interface NavbarProps {
     };
   };
 }
-
-import logoImage from "@/assets/images/logo.png";
-import { useCartStore } from "@/stores/useCartStore";
 
 const Navbar = ({
   logo = {
@@ -115,6 +116,10 @@ const Navbar = ({
 }: NavbarProps) => {
   const cartCount = useCartStore((state) => state.productsInCart.length);
 
+  // 👈 Pega os dados do cliente e a função de logout da store do Zustand
+  const { costumerInfo, logout } = useCostumerStore();
+  const isLogged = !!costumerInfo; // True se houver dados de usuário salvos
+
   return (
     <section className={cn("w-full shadow", className)}>
       {/* Header */}
@@ -153,12 +158,11 @@ const Navbar = ({
               asChild
               variant="outline"
               size="lg"
-              className="h-auto px-8 py-3 relative" // Adicionado relative
+              className="h-auto px-8 py-3 relative"
             >
               <a href={cart.url} className="flex items-center gap-2">
                 <div className="relative">
                   <ShoppingCart className="size-5" />
-                  {/* Badge Vermelho */}
                   {cartCount > 0 && (
                     <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-[10px] font-bold text-white animate-in zoom-in">
                       {cartCount}
@@ -168,17 +172,42 @@ const Navbar = ({
                 {cart.title}
               </a>
             </Button>
-            <Button
-              asChild
-              variant="outline"
-              size="lg"
-              className="h-auto px-8 py-3"
-            >
-              <a href={auth.login.url}>{auth.login.title}</a>
-            </Button>
-            <Button asChild size="lg" className="h-auto px-8 py-3">
-              <a href={auth.signup.url}>{auth.signup.title}</a>
-            </Button>
+
+            {/* Renderização Condicional - Desktop 🚀 */}
+            {isLogged ? (
+              <>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="h-auto px-8 py-3"
+                >
+                  <a href="/account">My Account</a>
+                </Button>
+                <Button
+                  onClick={logout} // Aciona a action de logout que limpa o LocalStorage
+                  variant="destructive" // Deixa o botão vermelho no padrão shadcn
+                  size="lg"
+                  className="h-auto px-8 py-3"
+                >
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="h-auto px-8 py-3"
+                >
+                  <a href={auth.login.url}>{auth.login.title}</a>
+                </Button>
+                <Button asChild size="lg" className="h-auto px-8 py-3">
+                  <a href={auth.signup.url}>{auth.signup.title}</a>
+                </Button>
+              </>
+            )}
           </div>
         </nav>
 
@@ -229,12 +258,11 @@ const Navbar = ({
                       asChild
                       variant="outline"
                       size="lg"
-                      className="h-auto px-8 py-3 relative" // Adicionado relative
+                      className="h-auto px-8 py-3 relative"
                     >
                       <a href={cart.url} className="flex items-center gap-2">
                         <div className="relative">
                           <ShoppingCart className="size-5" />
-                          {/* Badge Vermelho */}
                           {cartCount > 0 && (
                             <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-[10px] font-bold text-white animate-in zoom-in">
                               {cartCount}
@@ -244,16 +272,39 @@ const Navbar = ({
                         {cart.title}
                       </a>
                     </Button>
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="h-auto px-8 py-3"
-                    >
-                      <a href={auth.login.url}>{auth.login.title}</a>
-                    </Button>
-                    <Button asChild className="h-auto px-8 py-3">
-                      <a href={auth.signup.url}>{auth.signup.title}</a>
-                    </Button>
+
+                    {/* Renderização Condicional - Mobile 🚀 */}
+                    {isLogged ? (
+                      <>
+                        <Button
+                          asChild
+                          variant="outline"
+                          className="h-auto px-8 py-3"
+                        >
+                          <a href="/account">My Account</a>
+                        </Button>
+                        <Button
+                          onClick={logout}
+                          variant="destructive"
+                          className="h-auto px-8 py-3"
+                        >
+                          Logout
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button
+                          asChild
+                          variant="outline"
+                          className="h-auto px-8 py-3"
+                        >
+                          <a href={auth.login.url}>{auth.login.title}</a>
+                        </Button>
+                        <Button asChild className="h-auto px-8 py-3">
+                          <a href={auth.signup.url}>{auth.signup.title}</a>
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
               </SheetContent>
