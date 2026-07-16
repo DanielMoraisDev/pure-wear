@@ -1,4 +1,4 @@
-import { Routes, BrowserRouter, Route } from "react-router-dom";
+import { Routes, BrowserRouter, Route, Navigate } from "react-router-dom";
 import Home from "@/pages/Home";
 import Shop from "@/pages/Shop";
 import Navbar from "@/layouts/Navbar";
@@ -79,37 +79,22 @@ const App = () => {
             </>
           }
         />
+        <Route path="/auth" element={<Auth />} />
         <Route
           path="/login"
-          element={
-            <>
-              <Auth />
-            </>
-          }
+          element={<Navigate to="/auth?type=login" replace />}
         />
         <Route
           path="/register"
-          element={
-            <>
-              <Auth initialType={"register"} />
-            </>
-          }
+          element={<Navigate to="/auth?type=register" replace />}
         />
         <Route
           path="/admin/login"
-          element={
-            <>
-              <Auth initialType={"loginAdmin"} />
-            </>
-          }
+          element={<Navigate to="/auth?type=loginAdmin" replace />}
         />
         <Route
           path="/admin/register"
-          element={
-            <>
-              <Auth initialType={"registerAdmin"} />
-            </>
-          }
+          element={<Navigate to="/auth?type=registerAdmin" replace />}
         />
         <Route
           path="/privacy-policy"
