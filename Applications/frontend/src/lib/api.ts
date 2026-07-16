@@ -1,5 +1,6 @@
 import axios from "axios";
-import { useAdminStore } from "@/stores/useAdminStore"; // Importe o store correto
+import { useAdminStore } from "@/stores/useAdminStore";
+import { useCostumerStore } from "@/stores/useCostumerStore";
 import { apiUrl } from "@/components/common/http";
 
 export const api = axios.create({
@@ -7,13 +8,11 @@ export const api = axios.create({
   withCredentials: true,
 });
 
-// Interceptor de Requisição: Adiciona o Token em todas as chamadas
 api.interceptors.request.use((config) => {
-  // Acessa o estado atual do store
+  const customerInfo = useCostumerStore.getState().costumerInfo;
   const adminInfo = useAdminStore.getState().adminInfo;
 
-  // Como o seu JSON mostra que o token está dentro de adminInfo
-  const token = adminInfo?.token;
+  const token = customerInfo?.token || adminInfo?.token;
 
   if (token && !config.headers.Authorization) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -22,16 +21,20 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Interceptor de Resposta Simplificado:
-// Apenas para tratar erros globais (como forçar logout se o token for inválido)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Se receber 401 (Não autorizado), limpa o store e desloga
     if (error.response?.status === 401) {
-      useAdminStore.getState().logout();
-      // Opcional: window.location.href = '/login';
+      const customerInfo = useCostumerStore.getState().costumerInfo;
+      const adminInfo = useAdminStore.getState().adminInfo;
+
+      if (customerInfo?.token) {
+        useCostumerStore.getState().logout();
+      } else if (adminInfo?.token) {
+        useAdminStore.getState().logout();
+      }
     }
+
     return Promise.reject(error);
   },
 );

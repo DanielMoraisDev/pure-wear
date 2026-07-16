@@ -37,6 +37,7 @@ const Checkout = () => {
   const total = useCartTotal();
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [hasCompletedOrder, setHasCompletedOrder] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1200);
@@ -48,7 +49,7 @@ const Checkout = () => {
   }, [dataCheckout]);
 
   useEffect(() => {
-    if (productsInCart.length === 0 && !isLoading) {
+    if (productsInCart.length === 0 && !isLoading && !hasCompletedOrder) {
       navigate("/cart");
     }
 
@@ -68,7 +69,7 @@ const Checkout = () => {
       shipping: 0,
       cart: formattedCart,
     }));
-  }, [productsInCart, isLoading, navigate]);
+  }, [productsInCart, isLoading, navigate, hasCompletedOrder]);
 
   useEffect(() => {
     setDataCheckout((prev) => ({
@@ -139,11 +140,45 @@ const Checkout = () => {
 
     // Dispara a requisição
     orderSave(dataCheckout, {
-      onSuccess: () => {
+      onSuccess: (response) => {
+        const finishedOrder = {
+          orderId: `#${Date.now()}`,
+          orderDate: new Date().toLocaleDateString("en-US", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          }),
+          status: "pending",
+          customerName: `${firstName} ${lastName}`.trim(),
+          email: dataCheckout.email,
+          address: dataCheckout.address,
+          city: dataCheckout.city,
+          state: dataCheckout.state,
+          zip: dataCheckout.zip,
+          mobile: dataCheckout.mobile,
+          paymentMethod: "Cash On Delivery",
+          items: productsInCart.map((product) => ({
+            product_id: product.id,
+            name: product.name,
+            qty: product.quantity,
+            price: product.price * product.quantity,
+            unit_price: product.price,
+            size: product.size,
+            img: product.img,
+          })),
+          subTotal: total,
+          shipping: 0,
+          grandTotal: total,
+          message: response?.message || "Pedido realizado com sucesso",
+        };
+
+        setHasCompletedOrder(true);
         clearCart();
-        const timer = setTimeout(() => {
-          navigate("/");
-        }, 1000);
+
+        navigate("/orders/finished", {
+          replace: true,
+          state: { orderData: finishedOrder },
+        });
       },
     });
   };

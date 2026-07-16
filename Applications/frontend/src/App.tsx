@@ -11,6 +11,7 @@ import AuthPage from "./pages/Auth";
 import Auth from "./pages/Auth";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Checkout from "./pages/Checkout";
+import OrdersFinished from "./pages/Orders";
 import AdminDashboardLayout from "./layouts/AdminDashboard";
 import Stats from "./pages/AdminDashboard/components/Stats";
 import Categories from "./pages/AdminDashboard/components/Categories";
@@ -112,6 +113,16 @@ const App = () => {
             <>
               <Navbar />
               <Checkout />
+              <Footer />
+            </>
+          }
+        />
+        <Route
+          path="/orders/finished"
+          element={
+            <>
+              <Navbar />
+              <OrdersFinished />
               <Footer />
             </>
           }
