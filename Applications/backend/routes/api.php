@@ -23,7 +23,7 @@ Route::get('sizes', [SizeController::class, 'index']);
 Route::post('register', [AccountController::class, 'register']);
 Route::post('login', [AccountController::class, 'authenticate']);
 
-Route::group(['middleware' => 'auth:sanctum'], function () {
+Route::group(['middleware' => 'auth:sanctum', 'checkCustomerRole'], function () {
     Route::post('save-order', [OrderController::class, 'saveOrder']);
 });
 
@@ -32,7 +32,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
-Route::group(['middleware' => 'auth:sanctum'], function () {
+Route::group(['middleware' => 'auth:sanctum', 'checkAdminRole'], function () {
     /* Route::get('categories', [CategoryController::class, 'index']);
     Route::get('categories/{id}', [CategoryController::class, 'show']);
     Route::put('categories/{id}', [CategoryController::class, 'update']);
