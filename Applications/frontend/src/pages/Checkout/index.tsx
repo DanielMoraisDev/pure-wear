@@ -7,34 +7,18 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCartStore, useCartTotal } from "@/stores/useCartStore";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-
-interface CheckoutOrder {
-  product_id: number;
-  name: string;
-  qty: number;
-  price: number;
-  unit_price: number;
-  size: string;
-}
-interface Checkout {
-  name: string;
-  email: string;
-  city: string;
-  state: string;
-  zip: string;
-  address: string;
-  mobile: string;
-  grand_total: number;
-  sub_total: number;
-  shipping: number;
-  cart: CheckoutOrder[];
-}
+import { FormEvent, useEffect, useState } from "react";
+import {
+  OrderSaveBody,
+  OrderSaveCartItem,
+} from "@/types/frontend/orders.types";
+import { toast } from "sonner";
+import { useOrder } from "@/hooks/frontend/use-order";
 
 const Checkout = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [dataCheckout, setDataCheckout] = useState<Checkout>({
+  const [dataCheckout, setDataCheckout] = useState<OrderSaveBody>({
     name: "",
     email: "",
     city: "",
@@ -68,7 +52,7 @@ const Checkout = () => {
       navigate("/cart");
     }
 
-    const formattedCart: CheckoutOrder[] = productsInCart.map((item) => ({
+    const formattedCart: OrderSaveCartItem[] = productsInCart.map((item) => ({
       product_id: item.id,
       name: item.name,
       qty: item.quantity,
@@ -93,11 +77,75 @@ const Checkout = () => {
     }));
   }, [lastName, firstName]);
 
-  const handleFinalizeOrder = (e: React.FormEvent) => {
+  const { OrderSave } = useOrder();
+
+  const { mutate: orderSave, isPending } = OrderSave();
+
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    alert("Order placed successfully!");
-    clearCart();
-    navigate("/");
+    // 1. Validação de Nome Completo (visto que vem de dois inputs separados)
+    if (!firstName.trim()) {
+      toast.warning("Por favor, preencha o seu primeiro nome.");
+      return;
+    }
+    if (!lastName.trim()) {
+      toast.warning("Por favor, preencha o seu sobrenome.");
+      return;
+    }
+
+    // 2. Validação dos Campos de Endereço e Contato
+    if (!dataCheckout.email.trim()) {
+      toast.warning("O e-mail do usuário precisa estar preenchido.");
+      return;
+    }
+
+    // Validação simples de formato de e-mail
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(dataCheckout.email)) {
+      toast.warning("Por favor, insira um e-mail válido.");
+      return;
+    }
+
+    if (!dataCheckout.mobile.trim()) {
+      toast.warning("O número de celular/telefone precisa ser preenchido.");
+      return;
+    }
+
+    if (!dataCheckout.zip.trim()) {
+      toast.warning("O CEP precisa ser preenchido.");
+      return;
+    }
+
+    if (!dataCheckout.address.trim()) {
+      toast.warning("O endereço de entrega precisa ser preenchido.");
+      return;
+    }
+
+    if (!dataCheckout.city.trim()) {
+      toast.warning("A cidade precisa ser preenchida.");
+      return;
+    }
+
+    if (!dataCheckout.state.trim()) {
+      toast.warning("O estado precisa ser preenchido.");
+      return;
+    }
+
+    // 3. Validação de Segurança (Garantir que o carrinho não está vazio ao enviar)
+    if (dataCheckout.cart.length === 0) {
+      toast.error("Seu carrinho está vazio!");
+      return;
+    }
+
+    // Dispara a requisição
+    orderSave(dataCheckout, {
+      onSuccess: () => {
+        clearCart();
+        const timer = setTimeout(() => {
+          navigate("/");
+        }, 1000);
+      },
+    });
   };
 
   if (isLoading) {
@@ -127,7 +175,7 @@ const Checkout = () => {
       </div>
 
       <form
-        onSubmit={handleFinalizeOrder}
+        onSubmit={(e) => onSubmit(e)}
         className="grid gap-10 lg:grid-cols-12"
       >
         {/* Formulários (Esquerda) */}
@@ -327,6 +375,7 @@ const Checkout = () => {
 
             <Button
               type="submit"
+              disabled={isPending}
               className="w-full py-6 text-base font-bold rounded-xl shadow-lg transition-all hover:scale-[1.02]"
             >
               Complete Order
