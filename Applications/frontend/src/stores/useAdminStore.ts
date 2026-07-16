@@ -9,7 +9,7 @@ interface AdminData {
 
 interface AdminStore {
   adminInfo: AdminData | null;
-  login: (data: any) => void;
+  login: (data: AdminData) => void;
   logout: () => void;
 }
 

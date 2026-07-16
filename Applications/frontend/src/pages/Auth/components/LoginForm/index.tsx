@@ -1,16 +1,53 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useUser } from "@/hooks/frontend/use-users";
+import { UserLoginBody } from "@/types/frontend/users.type";
 import { Chrome } from "lucide-react";
+import { FormEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface LoginFormProps {
   onSwitchToRegister: () => void;
 }
 
 export const LoginForm = ({ onSwitchToRegister }: LoginFormProps) => {
+  const navigate = useNavigate();
+
+  const [user, setUser] = useState<UserLoginBody>({
+    password: "",
+    email: "",
+  });
+
+  const { Login } = useUser();
+
+  const { mutate: loginUser, isPending } = Login();
+
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (user.email == "") {
+      toast.warning("O email do usuário precisa estar preenchido");
+    }
+
+    if (user.password == "") {
+      toast.warning("A senha do usuário precisa estar preenchido");
+    }
+
+    // Dispara a requisição
+    loginUser(user, {
+      onSuccess: () => {
+        const timer = setTimeout(() => {
+          navigate("/");
+        }, 1000);
+      },
+    });
+  };
+
   return (
     <div className="grid gap-6">
-      <form onSubmit={(e) => e.preventDefault()}>
+      <form onSubmit={(e) => onSubmit(e)}>
         <div className="grid gap-3">
           <div className="grid gap-1">
             <Label className="sr-only" htmlFor="email">
@@ -24,6 +61,12 @@ export const LoginForm = ({ onSwitchToRegister }: LoginFormProps) => {
               autoComplete="email"
               autoCorrect="off"
               className="h-11 border-zinc-200 dark:border-zinc-800"
+              onChange={(e) => {
+                setUser({
+                  ...user,
+                  email: e.target.value,
+                });
+              }}
             />
           </div>
           <div className="grid gap-1">
@@ -36,9 +79,17 @@ export const LoginForm = ({ onSwitchToRegister }: LoginFormProps) => {
               type="password"
               autoComplete="current-password"
               className="h-11 border-zinc-200 dark:border-zinc-800"
+              onChange={(e) => {
+                setUser({
+                  ...user,
+                  password: e.target.value,
+                });
+              }}
             />
           </div>
-          <Button className="h-11 font-medium mt-2">Sign in with Email</Button>
+          <Button disabled={isPending} className="h-11 font-medium mt-2">
+            {isPending ? "Signing in with Email..." : "Sign in with Email"}
+          </Button>
         </div>
       </form>
 

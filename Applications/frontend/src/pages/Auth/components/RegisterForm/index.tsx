@@ -43,7 +43,7 @@ export const RegisterForm = ({ onSwitchToLogin }: RegisterFormProps) => {
     registerUser(user, {
       onSuccess: () => {
         const timer = setTimeout(() => {
-          navigate("/login");
+          navigate("/auth?type=login");
         }, 1000);
       },
     });
@@ -63,7 +63,7 @@ export const RegisterForm = ({ onSwitchToLogin }: RegisterFormProps) => {
               type="text"
               autoCapitalize="words"
               className="h-11 border-zinc-200 dark:border-zinc-800"
-              onBlur={(e) => {
+              onChange={(e) => {
                 setUser({
                   ...user,
                   name: e.target.value,
@@ -82,7 +82,7 @@ export const RegisterForm = ({ onSwitchToLogin }: RegisterFormProps) => {
               autoCapitalize="none"
               autoComplete="email"
               className="h-11 border-zinc-200 dark:border-zinc-800"
-              onBlur={(e) => {
+              onChange={(e) => {
                 setUser({
                   ...user,
                   email: e.target.value,
@@ -99,7 +99,7 @@ export const RegisterForm = ({ onSwitchToLogin }: RegisterFormProps) => {
               placeholder="Create a strong password"
               type="password"
               className="h-11 border-zinc-200 dark:border-zinc-800"
-              onBlur={(e) => {
+              onChange={(e) => {
                 setUser({
                   ...user,
                   password: e.target.value,

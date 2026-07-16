@@ -1,17 +1,24 @@
 import { apiUrl } from "@/components/common/http";
 import { api } from "@/lib/api";
 import {
+  UserLoginBody,
+  UserLoginResponse,
   UserRegisterBody,
-  UserRegisterResponse,
 } from "@/types/frontend/users.type";
+import { ApiResponse } from "@/types/success.types";
 
 export const userRegister = async (
   body: UserRegisterBody,
-): Promise<UserRegisterResponse> => {
-  const response = await api.post<UserRegisterResponse>(
-    `${apiUrl}/register`,
-    body,
-  );
+): Promise<ApiResponse> => {
+  const response = await api.post<ApiResponse>(`${apiUrl}/register`, body);
+
+  return response.data;
+};
+
+export const userLogin = async (
+  body: UserLoginBody,
+): Promise<UserLoginResponse> => {
+  const response = await api.post<UserLoginResponse>(`${apiUrl}/login`, body);
 
   return response.data;
 };
