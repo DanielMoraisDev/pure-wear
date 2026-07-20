@@ -1,6 +1,7 @@
 import { useState } from "react";
 import OrderRow from "./components/Order";
 import OrderSkeleton from "./components/OrderSkeleton";
+import OrderDetail from "./components/OrderDetail";
 import {
   Table,
   TableBody,
@@ -10,8 +11,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import { useOrder } from "@/hooks/admin/use-orders";
 import { Order } from "@/types/orders.type";
 
@@ -19,8 +18,8 @@ const Orders = () => {
   const { GetAll } = useOrder();
   const { data: response, isLoading } = GetAll({});
 
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   const orders = Array.isArray(response?.data) ? response.data : [];
 
@@ -47,7 +46,16 @@ const Orders = () => {
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => <OrderSkeleton key={i} />)
             ) : orders.length > 0 ? (
-              orders.map((order) => <OrderRow key={order.id} order={order} />)
+              orders.map((order) => (
+                <OrderRow
+                  key={order.id}
+                  order={order}
+                  onClick={() => {
+                    setSelectedOrderId(order.id);
+                    setIsDetailOpen(true);
+                  }}
+                />
+              ))
             ) : (
               <TableRow>
                 <TableCell
@@ -61,6 +69,16 @@ const Orders = () => {
           </TableBody>
         </Table>
       </Card>
+      <OrderDetail
+        orderId={selectedOrderId}
+        open={isDetailOpen}
+        onOpenChange={(open) => {
+          setIsDetailOpen(open);
+          if (!open) {
+            setSelectedOrderId(null);
+          }
+        }}
+      />
     </div>
   );
 };

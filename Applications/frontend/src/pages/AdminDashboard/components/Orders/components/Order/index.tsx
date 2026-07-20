@@ -3,6 +3,7 @@ import { Order, PaymentStatus, Status } from "@/types/orders.type";
 
 interface OrderRowProps {
   order: Order;
+  onClick?: () => void;
 }
 
 // 1. Mapeamento de cores para o Status de Pagamento
@@ -26,9 +27,12 @@ const capitalize = (str: string) =>
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 
-const OrderRow = ({ order }: OrderRowProps) => {
+const OrderRow = ({ order, onClick }: OrderRowProps) => {
   return (
-    <TableRow className="hover:bg-muted/50 transition-colors">
+    <TableRow
+      onClick={onClick}
+      className="cursor-pointer hover:bg-muted/50 transition-colors"
+    >
       <TableCell className="font-medium text-muted-foreground">
         {order.id}
       </TableCell>
