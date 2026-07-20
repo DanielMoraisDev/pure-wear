@@ -15,3 +15,14 @@ export interface GetOneOrdersResponse {
   data: Order;
   status: number;
 }
+
+export interface UpdateOrderParams {
+  orderId: string;
+  payment_status?: PaymentStatus;
+  status?: Status;
+}
+
+export interface UpdateOrderResponse {
+  data: Order;
+  status: number;
+}

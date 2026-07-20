@@ -5,6 +5,7 @@ import * as api from "@/services/admin/orders";
 import {
   FetchGetAllOrdersParams,
   FetchGetOneOrdersParams,
+  UpdateOrderParams,
 } from "@/types/admin/orders.types";
 
 export function useOrder() {
@@ -37,5 +38,17 @@ export function useOrder() {
     });
   };
 
-  return { GetAll, GetOne };
+  // --- ATUALIZAR ---
+  const Update = () => {
+    return useMutation({
+      mutationFn: (params: UpdateOrderParams) => api.orderUpdate(params),
+      onSuccess: (response) => {
+        toast.success("Produto atualizado!");
+        queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      },
+      onError: handleApiError,
+    });
+  };
+
+  return { GetAll, GetOne, Update };
 }

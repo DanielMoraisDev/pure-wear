@@ -1,10 +1,18 @@
 import { api } from "@/lib/api";
-import { orderSave } from "@/services/frontend/orders";
+import {
+  orderGetAll,
+  orderGetOne,
+  orderSave,
+} from "@/services/frontend/orders";
 import { ApiErrorResponse } from "@/types/error.types";
 
-import { OrderSaveBody } from "@/types/frontend/orders.types";
+import {
+  FetchGetAllOrdersParams,
+  FetchGetOneOrdersParams,
+  OrderSaveBody,
+} from "@/types/frontend/orders.types";
 import { handleApiError } from "@/utils/handle-api-error";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 export function useOrder() {
@@ -43,7 +51,35 @@ export function useOrder() {
     });
   };
 
+  // --- LISTAR TODOS ---
+  const GetAll = (
+    params: FetchGetAllOrdersParams,
+    options?: { enabled?: boolean },
+  ) => {
+    return useQuery({
+      queryKey: [...QUERY_KEY, params],
+      queryFn: () => orderGetAll(params).catch(handleApiError),
+      enabled: options?.enabled !== false,
+      staleTime: 1000 * 60 * 5,
+    });
+  };
+
+  // --- BUSCAR UM ---
+  const GetOne = (
+    params: FetchGetOneOrdersParams,
+    options?: { enabled?: boolean },
+  ) => {
+    return useQuery({
+      queryKey: [...QUERY_KEY, params],
+      queryFn: () => orderGetOne(params).catch(handleApiError),
+      enabled: options?.enabled !== false,
+      staleTime: 1000 * 60 * 5,
+    });
+  };
+
   return {
     OrderSave,
+    GetAll,
+    GetOne,
   };
 }

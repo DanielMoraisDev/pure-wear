@@ -23,6 +23,7 @@ import Brands from "./pages/AdminDashboard/components/Brands";
 import { CustomerProtectedRoute } from "./components/auth/ProtectedRoute/Customer";
 import CustomerDashboardLayout from "./layouts/CustomerDashboard";
 import Orders from "./pages/AdminDashboard/components/Orders";
+import OrdersCustomer from "./pages/CustomerDashboard/components/Orders";
 
 const App = () => {
   return (
@@ -139,11 +140,7 @@ const App = () => {
               element={<UnderDevelopment title="Dashboard" />}
             />
 
-            {/* Rotas em Desenvolvimento */}
-            <Route
-              path="orders"
-              element={<UnderDevelopment title="Orders" />}
-            />
+            <Route index path="orders" element={<OrdersCustomer />} />
             <Route
               path="change-password"
               element={<UnderDevelopment title="Change Password" />}
@@ -162,7 +159,6 @@ const App = () => {
             <Route path="products" element={<Products />} />
             <Route path="brands" element={<Brands />} />
             <Route path="orders" element={<Orders />} />
-            {/* <Route path="orders/:id" element={<OrderDetails />} /> */}
 
             {/* Rotas em Desenvolvimento */}
             <Route path="users" element={<UnderDevelopment title="Users" />} />

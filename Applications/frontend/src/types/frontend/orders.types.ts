@@ -1,3 +1,5 @@
+import { Order } from "../orders.type";
+
 export interface FetchGetAllCategoryParams {}
 
 export interface OrderSaveCartItem {
@@ -21,4 +23,20 @@ export interface OrderSaveBody {
   sub_total: number;
   shipping: number;
   cart: OrderSaveCartItem[];
+}
+
+export interface FetchGetAllOrdersParams {}
+
+export interface GetAllOrdersResponse {
+  data: Order[];
+  status: number;
+}
+
+export interface FetchGetOneOrdersParams {
+  orderId: string;
+}
+
+export interface GetOneOrdersResponse {
+  data: Order;
+  status: number;
 }

@@ -5,6 +5,8 @@ import {
   FetchGetOneOrdersParams,
   GetAllOrdersResponse,
   GetOneOrdersResponse,
+  UpdateOrderParams,
+  UpdateOrderResponse,
 } from "@/types/admin/orders.types";
 
 export const orderGetAll = async (
@@ -22,6 +24,16 @@ export const orderGetOne = async (
 ): Promise<GetOneOrdersResponse> => {
   const response = await api.get<GetOneOrdersResponse>(
     apiUrl + `/orders/${params.orderId}`,
+  );
+  return response.data;
+};
+
+export const orderUpdate = async (
+  params: UpdateOrderParams,
+): Promise<UpdateOrderResponse> => {
+  const response = await api.post<UpdateOrderResponse>(
+    apiUrl + `/update-order/${params.orderId}`,
+    params,
   );
   return response.data;
 };

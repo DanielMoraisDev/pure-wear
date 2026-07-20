@@ -1,4 +1,4 @@
-import { useOrder } from "@/hooks/admin/use-orders";
+import { useOrder } from "@/hooks/frontend/use-order";
 import { Order, PaymentStatus, Status } from "@/types/orders.type";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -18,6 +18,19 @@ import {
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+
+const paymentStatusStyles: Record<PaymentStatus, string> = {
+  "not paid": "bg-red-600 text-white font-semibold shadow-sm",
+  paid: "bg-emerald-600 text-white font-semibold shadow-sm",
+};
+
+// 2. Mapeamento de cores para o Status do Pedido
+const orderStatusStyles: Record<Status, string> = {
+  pending: "bg-amber-500 text-white font-semibold shadow-sm",
+  shipped: "bg-blue-500 text-white font-semibold shadow-sm",
+  delivered: "bg-emerald-700 text-white font-semibold shadow-sm",
+  cancelled: "bg-zinc-500 text-white font-semibold shadow-sm",
+};
 
 interface OrderDetailProps {
   orderId: number | null;
@@ -48,45 +61,13 @@ const capitalize = (value: string) =>
     .join(" ");
 
 const OrderDetail = ({ orderId, open, onOpenChange }: OrderDetailProps) => {
-  const { GetOne, Update } = useOrder();
+  const { GetOne } = useOrder();
   const { data: response, isLoading } = GetOne(
     { orderId: orderId?.toString() ?? "" },
     { enabled: open && orderId !== null },
   );
 
-  const { mutate: updateMutate, isPending: isUpdating } = Update();
-
-  const [updateData, setUpdateData] = useState<{
-    payment_status: PaymentStatus;
-    status: Status;
-  }>({
-    payment_status: "not paid",
-    status: "pending",
-  });
-
-  useEffect(() => {
-    console.log(updateData);
-  }, [updateData]);
-
-  useEffect(() => {
-    if (response?.data) {
-      setUpdateData({
-        payment_status: response.data.payment_status,
-        status: response.data.status,
-      });
-    }
-  }, [response?.data]);
-
   const order: Order | undefined = response?.data;
-
-  const handleUpdate = () => {
-    if (!order) return;
-    updateMutate({
-      orderId: order.id.toString(),
-      payment_status: updateData.payment_status,
-      status: updateData.status,
-    });
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -163,45 +144,19 @@ const OrderDetail = ({ orderId, open, onOpenChange }: OrderDetailProps) => {
                   <div className="grid gap-4">
                     <div className="grid gap-2">
                       <Label htmlFor="payment-status">Payment Status</Label>
-                      <Select
-                        value={updateData.payment_status}
-                        onValueChange={(value) =>
-                          setUpdateData((prev) => ({
-                            ...prev,
-                            payment_status: value as PaymentStatus,
-                          }))
-                        }
+                      <p
+                        className={`text-md inline-flex items-center justify-center px-3 py-1 rounded-full ${paymentStatusStyles[order.payment_status]}`}
                       >
-                        <SelectTrigger id="payment-status">
-                          <SelectValue placeholder="Select payment" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="not paid">Not Paid</SelectItem>
-                          <SelectItem value="paid">Paid</SelectItem>
-                        </SelectContent>
-                      </Select>
+                        {order.payment_status}
+                      </p>
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="order-status">Order Status</Label>
-                      <Select
-                        value={updateData.status}
-                        onValueChange={(value) =>
-                          setUpdateData((prev) => ({
-                            ...prev,
-                            status: value as Status,
-                          }))
-                        }
+                      <p
+                        className={`text-md inline-flex items-center justify-center px-3 py-1 rounded-full ${orderStatusStyles[order.status]}`}
                       >
-                        <SelectTrigger id="order-status">
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="pending">Pending</SelectItem>
-                          <SelectItem value="shipped">Shipped</SelectItem>
-                          <SelectItem value="delivered">Delivered</SelectItem>
-                          <SelectItem value="cancelled">Cancelled</SelectItem>
-                        </SelectContent>
-                      </Select>
+                        {order.status}
+                      </p>
                     </div>
                   </div>
                 </Card>
@@ -280,25 +235,6 @@ const OrderDetail = ({ orderId, open, onOpenChange }: OrderDetailProps) => {
                   </div>
                 </div>
               </Card>
-
-              <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-                <Button
-                  variant="outline"
-                  className="w-full sm:w-auto"
-                  onClick={() => onOpenChange(false)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  className="w-full sm:w-auto"
-                  onClick={() => {
-                    handleUpdate();
-                    onOpenChange(false);
-                  }}
-                >
-                  Finish edits
-                </Button>
-              </div>
             </div>
           )}
         </div>
