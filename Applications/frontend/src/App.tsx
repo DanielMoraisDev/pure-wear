@@ -18,8 +18,10 @@ import Categories from "./pages/AdminDashboard/components/Categories";
 import UnderDevelopment from "./pages/AdminDashboard/components/UnderDevelopment";
 import Products from "./pages/AdminDashboard/components/Products";
 import { Toaster } from "sonner";
-import { AdminProtectedRoute } from "./components/auth/ProtectedRoute";
+import { AdminProtectedRoute } from "./components/auth/ProtectedRoute/Admin";
 import Brands from "./pages/AdminDashboard/components/Brands";
+import { CustomerProtectedRoute } from "./components/auth/ProtectedRoute/Customer";
+import CustomerDashboardLayout from "./layouts/CustomerDashboard";
 
 const App = () => {
   return (
@@ -128,6 +130,25 @@ const App = () => {
           }
         />
 
+        <Route element={<CustomerProtectedRoute />}>
+          <Route path="/account" element={<CustomerDashboardLayout />}>
+            <Route
+              index
+              path="dashboard"
+              element={<UnderDevelopment title="Dashboard" />}
+            />
+
+            {/* Rotas em Desenvolvimento */}
+            <Route
+              path="orders"
+              element={<UnderDevelopment title="Orders" />}
+            />
+            <Route
+              path="change-password"
+              element={<UnderDevelopment title="Change Password" />}
+            />
+          </Route>
+        </Route>
         <Route element={<AdminProtectedRoute />}>
           <Route path="/admin" element={<AdminDashboardLayout />}>
             {/* Index redireciona ou mostra Stats */}

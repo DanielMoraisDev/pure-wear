@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useAdminStore } from "@/stores/useAdminStore";
-import { useCostumerStore } from "@/stores/useCostumerStore";
+import { useCustomerStore } from "@/stores/useCustomerStore";
 import { apiUrl } from "@/components/common/http";
 
 export const api = axios.create({
@@ -9,7 +9,7 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const customerInfo = useCostumerStore.getState().costumerInfo;
+  const customerInfo = useCustomerStore.getState().customerInfo;
   const adminInfo = useAdminStore.getState().adminInfo;
 
   const token = customerInfo?.token || adminInfo?.token;
@@ -25,11 +25,11 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      const customerInfo = useCostumerStore.getState().costumerInfo;
+      const customerInfo = useCustomerStore.getState().customerInfo;
       const adminInfo = useAdminStore.getState().adminInfo;
 
       if (customerInfo?.token) {
-        useCostumerStore.getState().logout();
+        useCustomerStore.getState().logout();
       } else if (adminInfo?.token) {
         useAdminStore.getState().logout();
       }

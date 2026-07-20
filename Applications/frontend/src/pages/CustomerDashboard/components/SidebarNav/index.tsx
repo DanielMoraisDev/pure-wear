@@ -2,30 +2,25 @@ import { Link, useNavigate } from "react-router-dom"; // Adicione useNavigate
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { useNavigationAdminDashboardStore } from "../../../../stores/useNavigationAdminDashboardStore";
-import { useAdminStore } from "@/stores/useAdminStore";
+import { useNavigationCustomerDashboardStore } from "../../../../stores/useNavigationCustomerDashboardStore";
+import { useCustomerStore } from "@/stores/useCustomerStore";
 
 const menuItems = [
   { label: "Dashboard", path: "dashboard" },
-  { label: "Categories", path: "categories" },
-  { label: "Brands", path: "brands" },
-  { label: "Products", path: "products" },
   { label: "Orders", path: "orders" },
-  { label: "Users", path: "users" },
-  { label: "Shipping", path: "shipping" },
   { label: "Change Password", path: "change-password" },
   { label: "Logout", path: "logout" }, // Mantemos aqui para aparecer na lista
 ];
 
 const SidebarNav = () => {
-  const { activeItem } = useNavigationAdminDashboardStore();
-  const logout = useAdminStore((state) => state.logout); // Pega a função de logout
+  const { activeItem } = useNavigationCustomerDashboardStore();
+  const logout = useCustomerStore((state) => state.logout); // Pega a função de logout
   const navigate = useNavigate();
 
   const handleLogout = (e: React.MouseEvent) => {
     e.preventDefault(); // Impede o Link de tentar navegar
     logout(); // Limpa o estado e o localStorage
-    navigate("/auth?type=loginAdmin"); // Manda o usuário de volta para o login
+    navigate("/auth?type=login"); // Manda o usuário de volta para o login
   };
 
   return (
@@ -37,7 +32,7 @@ const SidebarNav = () => {
           return (
             <Link
               key={item.path}
-              to={isLogout ? "#" : `/admin/${item.path}`}
+              to={isLogout ? "#" : `/account/${item.path}`}
               className="w-full"
               onClick={isLogout ? handleLogout : undefined} // Intercepta se for logout
             >

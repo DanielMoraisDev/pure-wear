@@ -36,7 +36,7 @@ import { cn } from "@/lib/utils";
 
 import logoImage from "@/assets/images/logo.png";
 import { useCartStore } from "@/stores/useCartStore";
-import { useCostumerStore } from "@/stores/useCostumerStore";
+import { useCustomerStore } from "@/stores/useCustomerStore";
 
 interface MenuItem {
   title: string;
@@ -117,8 +117,8 @@ const Navbar = ({
   const cartCount = useCartStore((state) => state.productsInCart.length);
 
   // 👈 Pega os dados do cliente e a função de logout da store do Zustand
-  const { costumerInfo, logout } = useCostumerStore();
-  const isLogged = !!costumerInfo; // True se houver dados de usuário salvos
+  const { customerInfo, logout } = useCustomerStore();
+  const isLogged = !!customerInfo; // True se houver dados de usuário salvos
 
   return (
     <section className={cn("w-full shadow", className)}>

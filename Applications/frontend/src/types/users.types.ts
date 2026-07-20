@@ -2,7 +2,7 @@ export interface UserAttributes {
   id: number;
   name: string;
   email: string;
-  role: "costumer" | "admin";
+  role: "customer" | "admin";
   email_verified_at: Date;
   password: string;
   created_at: Date;

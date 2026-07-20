@@ -1,6 +1,6 @@
 import { api } from "@/lib/api";
 import { userLogin, userRegister } from "@/services/frontend/users";
-import { useCostumerStore } from "@/stores/useCostumerStore";
+import { useCustomerStore } from "@/stores/useCustomerStore";
 import { ApiErrorResponse } from "@/types/error.types";
 
 import { UserLoginBody, UserRegisterBody } from "@/types/frontend/users.type";
@@ -9,7 +9,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 export function useUser() {
-  const loginCostumer = useCostumerStore((state) => state.login);
+  const loginCustomer = useCustomerStore((state) => state.login);
 
   const queryClient = useQueryClient();
   const QUERY_KEY = ["frontend-users"];
@@ -61,7 +61,7 @@ export function useUser() {
           name: data.name,
         };
 
-        loginCostumer(userData);
+        loginCustomer(userData);
         toast.success("Login realizado com sucesso");
       },
 

@@ -6,7 +6,7 @@ export const AdminProtectedRoute = () => {
 
   if (!adminInfo) {
     // Redireciona para o login se não estiver logado
-    return <Navigate to="/admin/login" replace />;
+    return <Navigate to="/auth?type=loginAdmin" replace />;
   }
 
   return <Outlet />; // Renderiza as rotas filhas (o dashboard)
