@@ -8,12 +8,19 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import CartItemSkeleton from "./components/CartItemSkeleton";
 import CartItem from "./components/CartItem";
+import { useShipping } from "@/hooks/frontend/use-shippings";
 
 const Cart = () => {
   const navigate = useNavigate();
   const { productsInCart, clearCart } = useCartStore();
   const total = useCartTotal();
+  const { Get: getShipping } = useShipping();
+  const { data: shippingData, isLoading: isShippingLoading } = getShipping(
+    {},
+    { enabled: true },
+  );
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const shippingCharge = shippingData?.data?.shipping_charge ?? 0;
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1500);
@@ -78,7 +85,15 @@ const Cart = () => {
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Shipping</span>
-                <span className="text-green-600 font-medium">Free</span>
+                {isLoading || isShippingLoading ? (
+                  <Skeleton className="h-4 w-16" />
+                ) : shippingCharge === 0 ? (
+                  <span className="text-green-600 font-medium">Free</span>
+                ) : (
+                  <span className="font-medium">
+                    $ {shippingCharge.toFixed(2)}
+                  </span>
+                )}
               </div>
               <Separator />
               <div className="flex justify-between font-bold">
@@ -86,7 +101,7 @@ const Cart = () => {
                 {isLoading ? (
                   <Skeleton className="h-6 w-20" />
                 ) : (
-                  <span>$ {total.toFixed(2)}</span>
+                  <span>$ {(total + shippingCharge).toFixed(2)}</span>
                 )}
               </div>
             </div>

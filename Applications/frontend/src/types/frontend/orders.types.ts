@@ -1,4 +1,4 @@
-import { Order } from "../orders.type";
+import { Order, PaymentStatus } from "../orders.type";
 
 export interface FetchGetAllCategoryParams {}
 
@@ -18,6 +18,7 @@ export interface OrderSaveBody {
   state: string;
   zip: string;
   address: string;
+  payment_status?: PaymentStatus;
   mobile: string;
   grand_total: number;
   sub_total: number;

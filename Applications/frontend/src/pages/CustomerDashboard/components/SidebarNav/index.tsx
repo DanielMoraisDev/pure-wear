@@ -6,6 +6,7 @@ import { useNavigationCustomerDashboardStore } from "../../../../stores/useNavig
 import { useCustomerStore } from "@/stores/useCustomerStore";
 
 const menuItems = [
+  { label: "Account", path: "profile" },
   { label: "Dashboard", path: "dashboard" },
   { label: "Orders", path: "orders" },
   { label: "Change Password", path: "change-password" },

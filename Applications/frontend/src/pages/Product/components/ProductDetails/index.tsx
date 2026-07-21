@@ -9,7 +9,7 @@ import {
   ProductAttributes,
   ProductCart,
 } from "@/types/products.types";
-import { useSize } from "@/hooks/admin/use-sizes";
+import { useSize } from "@/hooks/frontend/use-sizes";
 
 const ProductDetails = ({ product }: { product: Product }) => {
   const { GetAll: getSizes } = useSize();
@@ -143,6 +143,7 @@ const ProductDetails = ({ product }: { product: Product }) => {
 
         <Button
           onClick={handleAddToCart}
+          disabled={selectedSize === ""}
           className="w-full h-16 text-md md:text-xl font-medium bg-black hover:bg-gray-900 rounded-xl transition-all active:scale-[0.98]"
         >
           {productsInCart.some(

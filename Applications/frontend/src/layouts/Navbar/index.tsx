@@ -184,14 +184,14 @@ const Navbar = ({
                 >
                   <a href="/account">My Account</a>
                 </Button>
-                <Button
+                {/* <Button
                   onClick={logout} // Aciona a action de logout que limpa o LocalStorage
                   variant="destructive" // Deixa o botão vermelho no padrão shadcn
                   size="lg"
                   className="h-auto px-8 py-3"
                 >
                   Logout
-                </Button>
+                </Button> */}
               </>
             ) : (
               <>

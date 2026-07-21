@@ -24,6 +24,8 @@ import { CustomerProtectedRoute } from "./components/auth/ProtectedRoute/Custome
 import CustomerDashboardLayout from "./layouts/CustomerDashboard";
 import Orders from "./pages/AdminDashboard/components/Orders";
 import OrdersCustomer from "./pages/CustomerDashboard/components/Orders";
+import Account from "./pages/CustomerDashboard/components/Account";
+import Shipping from "./pages/AdminDashboard/components/Shipping";
 
 const App = () => {
   return (
@@ -134,8 +136,9 @@ const App = () => {
 
         <Route element={<CustomerProtectedRoute />}>
           <Route path="/account" element={<CustomerDashboardLayout />}>
+            <Route index element={<Navigate to="profile" replace />} />
+            <Route path="profile" element={<Account />} />
             <Route
-              index
               path="dashboard"
               element={<UnderDevelopment title="Dashboard" />}
             />
@@ -159,13 +162,10 @@ const App = () => {
             <Route path="products" element={<Products />} />
             <Route path="brands" element={<Brands />} />
             <Route path="orders" element={<Orders />} />
+            <Route path="shipping" element={<Shipping />} />
 
             {/* Rotas em Desenvolvimento */}
             <Route path="users" element={<UnderDevelopment title="Users" />} />
-            <Route
-              path="shipping"
-              element={<UnderDevelopment title="Shipping" />}
-            />
             <Route
               path="change-password"
               element={<UnderDevelopment title="Change Password" />}

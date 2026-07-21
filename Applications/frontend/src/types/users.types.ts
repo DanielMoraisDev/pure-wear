@@ -8,3 +8,13 @@ export interface UserAttributes {
   created_at: Date;
   updated_at: Date;
 }
+
+export interface UserAlterAttributes {
+  name: string;
+  email: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
+  mobile: string;
+}

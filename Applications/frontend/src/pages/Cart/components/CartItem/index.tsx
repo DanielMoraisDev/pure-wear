@@ -24,9 +24,10 @@ const CartItem = ({ product }: { product: ProductCart }) => {
           </p>
         </div>
 
-        <p className="text-sm text-muted-foreground line-clamp-1">
-          {product.description}
-        </p>
+        <p
+          className="text-sm text-muted-foreground line-clamp-1"
+          dangerouslySetInnerHTML={{ __html: product?.description }}
+        ></p>
 
         <div className="mt-3 flex items-center justify-between">
           <div className="flex items-center gap-1 border rounded-md p-1">

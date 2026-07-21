@@ -18,21 +18,21 @@ interface OrderItem {
 }
 
 interface OrderData {
-  orderId: string;
-  orderDate: string;
-  status: string;
-  customerName: string;
-  email: string;
-  address: string;
-  city: string;
-  state: string;
-  zip: string;
-  mobile: string;
-  paymentMethod: string;
-  items: OrderItem[];
-  subTotal: number;
-  shipping: number;
-  grandTotal: number;
+  orderId?: string;
+  orderDate?: string;
+  status?: string;
+  customerName?: string;
+  email?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zip?: string;
+  mobile?: string;
+  paymentMethod?: string;
+  items?: OrderItem[];
+  subTotal?: number;
+  shipping?: number;
+  grandTotal?: number;
 }
 
 const OrdersFinished = () => {
@@ -51,8 +51,23 @@ const OrdersFinished = () => {
     const receivedOrderData = location.state?.orderData as OrderData | null;
 
     if (receivedOrderData) {
+      sessionStorage.setItem(
+        "completedOrderData",
+        JSON.stringify(receivedOrderData),
+      );
       setOrderData(receivedOrderData);
       return;
+    }
+
+    const savedOrderData = sessionStorage.getItem("completedOrderData");
+
+    if (savedOrderData) {
+      try {
+        setOrderData(JSON.parse(savedOrderData) as OrderData);
+        return;
+      } catch {
+        sessionStorage.removeItem("completedOrderData");
+      }
     }
 
     setOrderData(null);
@@ -80,6 +95,24 @@ const OrdersFinished = () => {
       </div>
     );
   }
+
+  const currentOrderData = {
+    orderId: orderData.orderId || "#000",
+    orderDate: orderData.orderDate || "N/A",
+    status: orderData.status || "pending",
+    customerName: orderData.customerName || "N/A",
+    email: orderData.email || "N/A",
+    address: orderData.address || "N/A",
+    city: orderData.city || "N/A",
+    state: orderData.state || "N/A",
+    zip: orderData.zip || "N/A",
+    mobile: orderData.mobile || "N/A",
+    paymentMethod: orderData.paymentMethod || "Not specified",
+    items: orderData.items || [],
+    subTotal: orderData.subTotal || 0,
+    shipping: orderData.shipping || 0,
+    grandTotal: orderData.grandTotal || 0,
+  };
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -121,24 +154,30 @@ const OrdersFinished = () => {
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Order ID</p>
-                <p className="font-semibold text-lg">{orderData.orderId}</p>
+                <p className="font-semibold text-lg">
+                  {currentOrderData.orderId}
+                </p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Order Date</p>
-                <p className="font-semibold text-lg">{orderData.orderDate}</p>
+                <p className="font-semibold text-lg">
+                  {currentOrderData.orderDate}
+                </p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Status</p>
-                <Badge className={getStatusColor(orderData.status)}>
-                  {orderData.status.charAt(0).toUpperCase() +
-                    orderData.status.slice(1)}
+                <Badge className={getStatusColor(currentOrderData.status)}>
+                  {currentOrderData.status.charAt(0).toUpperCase() +
+                    currentOrderData.status.slice(1)}
                 </Badge>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground mb-1">
                   Payment Method
                 </p>
-                <p className="font-semibold">{orderData.paymentMethod}</p>
+                <p className="font-semibold">
+                  {currentOrderData.paymentMethod}
+                </p>
               </div>
             </div>
           </section>
@@ -155,33 +194,33 @@ const OrdersFinished = () => {
             <div className="space-y-4">
               <div>
                 <p className="text-sm text-muted-foreground">Customer Name</p>
-                <p className="font-medium">{orderData.customerName}</p>
+                <p className="font-medium">{currentOrderData.customerName}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Email</p>
-                <p className="font-medium">{orderData.email}</p>
+                <p className="font-medium">{currentOrderData.email}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Address</p>
-                <p className="font-medium">{orderData.address}</p>
+                <p className="font-medium">{currentOrderData.address}</p>
               </div>
               <div className="grid md:grid-cols-3 gap-4">
                 <div>
                   <p className="text-sm text-muted-foreground">City</p>
-                  <p className="font-medium">{orderData.city}</p>
+                  <p className="font-medium">{currentOrderData.city}</p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">State</p>
-                  <p className="font-medium">{orderData.state}</p>
+                  <p className="font-medium">{currentOrderData.state}</p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">ZIP Code</p>
-                  <p className="font-medium">{orderData.zip}</p>
+                  <p className="font-medium">{currentOrderData.zip}</p>
                 </div>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Contact</p>
-                <p className="font-medium">{orderData.mobile}</p>
+                <p className="font-medium">{currentOrderData.mobile}</p>
               </div>
             </div>
           </section>
@@ -214,7 +253,7 @@ const OrdersFinished = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {orderData.items.map((item) => (
+                  {currentOrderData.items.map((item) => (
                     <tr
                       key={`${item.product_id}-${item.size}`}
                       className="border-b"
@@ -261,19 +300,21 @@ const OrdersFinished = () => {
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Subtotal</span>
                 <span className="font-medium">
-                  ${orderData.subTotal.toFixed(2)}
+                  ${currentOrderData.subTotal.toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Shipping</span>
                 <span className="font-medium text-green-600">
-                  {orderData.shipping === 0 ? "Free" : `$${orderData.shipping}`}
+                  {currentOrderData.shipping === 0
+                    ? "Free"
+                    : `$${currentOrderData.shipping}`}
                 </span>
               </div>
               <Separator />
               <div className="flex justify-between font-bold text-lg text-primary">
                 <span>Grand Total</span>
-                <span>${orderData.grandTotal.toFixed(2)}</span>
+                <span>${currentOrderData.grandTotal.toFixed(2)}</span>
               </div>
             </div>
 
@@ -281,11 +322,11 @@ const OrdersFinished = () => {
 
             <div className="space-y-3">
               <Button
-                onClick={() => navigate("/shop")}
+                onClick={() => navigate("/account/orders")}
                 variant="outline"
                 className="w-full py-6 text-base font-semibold rounded-xl"
               >
-                Continue Shopping
+                View More Orders
               </Button>
               <Button
                 onClick={() => {

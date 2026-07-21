@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export type NavCustomerDashboardItem = "dashboard" | "orders";
+export type NavCustomerDashboardItem = "dashboard" | "orders" | "profile";
 
 interface NavigationCustomerDashboardState {
   activeItem: string;
